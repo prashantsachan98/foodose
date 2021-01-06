@@ -9,6 +9,10 @@ import 'package:foodose/models/recipe.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:io';
+import 'dart:developer';
+import './models/joke.dart';
+
+// recipe
 
 final String _baseURL = "api.spoonacular.com";
 const String API_KEY = "254d7e3cb60949c7a71f3e329b3b555d";
@@ -32,6 +36,31 @@ Future<Recipe> fetchRecipe(String id) async {
     Map<String, dynamic> data = json.decode(response.body);
     Recipe recipe = Recipe.fromMap(data);
     return recipe;
+  } catch (err) {
+    throw err.toString();
+  }
+}
+
+//joke
+
+Future<Joke> fetchJoke() async {
+  Map<String, String> parameter = {
+    'apiKey': API_KEY,
+  };
+  Uri uri = Uri.https(
+    _baseURL,
+    '/food/jokes/random',
+    parameter,
+  );
+  Map<String, String> headers = {
+    HttpHeaders.contentTypeHeader: 'application/json',
+  };
+
+  try {
+    var response = await http.get(uri, headers: headers);
+    Map<String, dynamic> data = json.decode(response.body);
+    Joke joke = Joke.fromJson(data);
+    return joke;
   } catch (err) {
     throw err.toString();
   }
@@ -65,6 +94,7 @@ class _MyHomepageState extends State<MyHomepage> {
   int _index = 0;
   final id = '716429';
   Future<Recipe> futureRecipe;
+  Future<Joke> futureJoke;
 
   @override
   void initState() {
@@ -107,15 +137,31 @@ class _MyHomepageState extends State<MyHomepage> {
             ),
           ),
           Container(
+              height: 55,
+              color: Colors.redAccent,
+              child: FutureBuilder<Joke>(
+                future: futureJoke,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    print(snapshot.data.joke);
+                    log(snapshot.data.joke);
+                    return Text(snapshot.data.joke);
+                  } else if (snapshot.hasError) {
+                    return Text("${snapshot.error}");
+                  }
+                  return CircularProgressIndicator();
+                },
+              )),
+          Container(
             color: Colors.white10,
             padding: EdgeInsets.fromLTRB(5, 0, 5, 5),
             margin: EdgeInsets.fromLTRB(5, 0, 5, 0),
-            height: 530.0,
+            height: 480.0,
+            width: 270,
             child: ListView.builder(
               itemBuilder: (context, index) {
                 return SizedBox(
-                  height: 220,
-                  width: 350,
+                  height: 180,
                   child: Card(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.only(

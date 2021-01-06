@@ -8,7 +8,7 @@ class Recipe {
     return Recipe(
       id: map['id'],
       title: map['title'],
-      imgURL: 'https://spoonacular.com/recipeImages/' + map['image'],
+      imgURL: map['image'],
     );
   }
 }
