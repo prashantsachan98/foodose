@@ -1,16 +1,21 @@
+import 'dart:ui';
+
 import 'package:flappy_search_bar/search_bar_style.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flappy_search_bar/flappy_search_bar.dart';
-//import 'package:flutter/services.dart';
+import 'package:flutter/services.dart';
 import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.dart';
 import 'package:foodose/models/recipe.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:io';
-import 'dart:developer';
 import './models/joke.dart';
+import 'dart:math';
+
+var rng = new Random();
+var l = new List.generate(12, (_) => rng.nextInt(100));
 
 // recipe
 
@@ -66,7 +71,12 @@ Future<Joke> fetchJoke() async {
   }
 }
 
+int val = 0;
 void main() {
+  var rng = new Random();
+  var l = new List.generate(12, (_) => rng.nextInt(100)).toString();
+  print(l);
+  SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
   // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
   // statusBarColor: Colors.transparent,
   // ));
@@ -80,6 +90,9 @@ class Foodose extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Custom Fonts',
+      // Set Raleway as the default app font.
+      theme: ThemeData(fontFamily: 'OpenSans'),
       home: MyHomepage(),
     );
   }
@@ -92,19 +105,20 @@ class MyHomepage extends StatefulWidget {
 
 class _MyHomepageState extends State<MyHomepage> {
   int _index = 0;
-  final id = '716429';
   Future<Recipe> futureRecipe;
   Future<Joke> futureJoke;
 
   @override
   void initState() {
     super.initState();
-    futureRecipe = fetchRecipe(id);
+    futureRecipe = fetchRecipe(l[val].toString());
+    futureJoke = fetchJoke();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       // backgroundColor: Colors.blueGrey,
       /* appBar: AppBar(
         backgroundColor: Colors.white,
@@ -120,13 +134,14 @@ class _MyHomepageState extends State<MyHomepage> {
         ],
       ),*/
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           SizedBox(
-            height: 20,
+            height: MediaQuery.of(context).size.height * 0.03,
           ),
           Container(
-            height: 80,
-            width: 400,
+            height: MediaQuery.of(context).size.height * 0.12,
+            width: MediaQuery.of(context).size.width * 1,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: SearchBar(
@@ -137,15 +152,21 @@ class _MyHomepageState extends State<MyHomepage> {
             ),
           ),
           Container(
-              height: 55,
-              color: Colors.redAccent,
+              height: MediaQuery.of(context).size.height * 0.07,
+              color: Colors.white10,
+              padding: EdgeInsets.symmetric(horizontal: 10),
               child: FutureBuilder<Joke>(
                 future: futureJoke,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     print(snapshot.data.joke);
-                    log(snapshot.data.joke);
-                    return Text(snapshot.data.joke);
+                    return Text(
+                      snapshot.data.joke,
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic),
+                    );
                   } else if (snapshot.hasError) {
                     return Text("${snapshot.error}");
                   }
@@ -154,69 +175,87 @@ class _MyHomepageState extends State<MyHomepage> {
               )),
           Container(
             color: Colors.white10,
-            padding: EdgeInsets.fromLTRB(5, 0, 5, 5),
-            margin: EdgeInsets.fromLTRB(5, 0, 5, 0),
-            height: 480.0,
-            width: 270,
+            height: (MediaQuery.of(context).size.height * 1 -
+                MediaQuery.of(context).size.height * 0.36),
             child: ListView.builder(
+              padding: EdgeInsets.only(top: 0.0),
+              itemCount: 10,
               itemBuilder: (context, index) {
-                return SizedBox(
-                  height: 180,
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                          bottomRight: Radius.circular(20),
-                          topRight: Radius.circular(20),
-                          topLeft: Radius.circular(20),
-                          bottomLeft: Radius.circular(20)),
-                    ),
-                    margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                    elevation: 5,
-                    child: Stack(
-                      children: <Widget>[
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(20.0),
+                return Container(
+                  color: Colors.white,
+                  padding: EdgeInsets.symmetric(vertical: 5),
+                  height: MediaQuery.of(context).size.height * 0.32,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: <Widget>[
+                      Card(
+                        semanticContainer: true,
+                        clipBehavior: Clip.antiAliasWithSaveLayer,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        elevation: 5,
+                        margin: EdgeInsets.symmetric(vertical: 4),
+                        //borderRadius: BorderRadius.circular(20.0),
+
+                        child: FutureBuilder<Recipe>(
+                          future: futureRecipe,
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return Image.network(
+                                snapshot.data.imgURL,
+                                fit: BoxFit.fill,
+                              );
+                            } else if (snapshot.hasError) {
+                              return Text("${snapshot.error}");
+                            }
+                            return CircularProgressIndicator();
+                          },
+                        ),
+                        //Image.asset('assets/images/food.jpg'),
+                      ),
+                      Container(
+                          alignment: AlignmentDirectional.bottomCenter,
                           child: FutureBuilder<Recipe>(
                             future: futureRecipe,
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
-                                return Image.network(snapshot.data.imgURL);
+                                return Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 10),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      gradient: LinearGradient(
+                                          colors: [Colors.green, Colors.blue])),
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.7,
+                                  child: Text(
+                                    snapshot.data.title,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'OpenSans',
+                                      color: Colors.white70,
+                                    ),
+                                  ),
+                                );
                               } else if (snapshot.hasError) {
                                 return Text("${snapshot.error}");
                               }
                               return CircularProgressIndicator();
                             },
+                          )
+                          //Text(
+                          //'recipie name',
+                          //style: TextStyle(color: Colors.white, fontSize: 30),
                           ),
-                          //Image.asset('assets/images/food.jpg'),
+                      Card(
+                        elevation: 0,
+                        child: InkWell(
+                          splashColor: Colors.white,
+                          onTap: () {},
                         ),
-                        Container(
-                            padding: EdgeInsets.all(20),
-                            alignment: AlignmentDirectional.bottomStart,
-                            child: FutureBuilder<Recipe>(
-                              future: futureRecipe,
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  return Text(snapshot.data.title);
-                                } else if (snapshot.hasError) {
-                                  return Text("${snapshot.error}");
-                                }
-                                return CircularProgressIndicator();
-                              },
-                            )
-                            //Text(
-                            //'recipie name',
-                            //style: TextStyle(color: Colors.white, fontSize: 30),
-                            ),
-                        Card(
-                          elevation: 0,
-                          child: InkWell(
-                            splashColor: Colors.white,
-                            onTap: () {},
-                          ),
-                          color: Color.fromRGBO(0, 0, 0, 0),
-                        ),
-                      ],
-                    ),
+                        color: Color.fromRGBO(0, 0, 0, 0),
+                      ),
+                    ],
                   ),
                 );
               },
@@ -225,21 +264,25 @@ class _MyHomepageState extends State<MyHomepage> {
           )
         ],
       ),
-      bottomNavigationBar: FloatingNavbar(
-        iconSize: 20,
-        backgroundColor: CupertinoColors.white,
-        selectedItemColor: Colors.greenAccent,
-        unselectedItemColor: Colors.grey,
-        onTap: (int val) => setState(() => _index = val),
-        currentIndex: _index,
-        items: [
-          FloatingNavbarItem(
-            icon: Icons.recent_actors_sharp,
-            title: 'recent',
-          ),
-          FloatingNavbarItem(icon: Icons.save_rounded, title: 'saved'),
-          FloatingNavbarItem(icon: Icons.recent_actors, title: 'recent'),
-        ],
+      bottomNavigationBar: SizedBox(
+        height: MediaQuery.of(context).size.height * 1 -
+            MediaQuery.of(context).size.height * 0.8945,
+        child: FloatingNavbar(
+          iconSize: 20,
+          backgroundColor: CupertinoColors.white,
+          selectedItemColor: Colors.greenAccent,
+          unselectedItemColor: Colors.grey,
+          onTap: (int val) => setState(() => _index = val),
+          currentIndex: _index,
+          items: [
+            FloatingNavbarItem(
+              icon: Icons.recent_actors_sharp,
+              title: 'recent',
+            ),
+            FloatingNavbarItem(icon: Icons.save_rounded, title: 'saved'),
+            FloatingNavbarItem(icon: Icons.recent_actors, title: 'recent'),
+          ],
+        ),
       ),
     );
   }
