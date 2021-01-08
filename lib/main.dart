@@ -12,24 +12,19 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:io';
 import './models/joke.dart';
-import 'dart:math';
-
-var rng = new Random();
-var l = new List.generate(12, (_) => rng.nextInt(100));
 
 // recipe
 
 final String _baseURL = "api.spoonacular.com";
 const String API_KEY = "254d7e3cb60949c7a71f3e329b3b555d";
 
-Future<Recipe> fetchRecipe(String id) async {
+Future<Recipe> fetchRecipe() async {
   Map<String, String> parameters = {
-    'includeNutrition': 'false',
     'apiKey': API_KEY,
   };
   Uri uri = Uri.https(
     _baseURL,
-    '/recipes/$id/information',
+    '/recipes/random',
     parameters,
   );
   Map<String, String> headers = {
@@ -39,7 +34,7 @@ Future<Recipe> fetchRecipe(String id) async {
   try {
     var response = await http.get(uri, headers: headers);
     Map<String, dynamic> data = json.decode(response.body);
-    Recipe recipe = Recipe.fromMap(data);
+    Recipe recipe = new Recipe.fromMap(data);
     return recipe;
   } catch (err) {
     throw err.toString();
@@ -71,11 +66,7 @@ Future<Joke> fetchJoke() async {
   }
 }
 
-int val = 0;
 void main() {
-  var rng = new Random();
-  var l = new List.generate(12, (_) => rng.nextInt(100)).toString();
-  print(l);
   SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
   // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
   // statusBarColor: Colors.transparent,
@@ -111,7 +102,7 @@ class _MyHomepageState extends State<MyHomepage> {
   @override
   void initState() {
     super.initState();
-    futureRecipe = fetchRecipe(l[val].toString());
+    futureRecipe = fetchRecipe();
     futureJoke = fetchJoke();
   }
 
@@ -179,7 +170,7 @@ class _MyHomepageState extends State<MyHomepage> {
                 MediaQuery.of(context).size.height * 0.36),
             child: ListView.builder(
               padding: EdgeInsets.only(top: 0.0),
-              itemCount: 10,
+              itemCount: 4,
               itemBuilder: (context, index) {
                 return Container(
                   color: Colors.white,
@@ -200,14 +191,14 @@ class _MyHomepageState extends State<MyHomepage> {
 
                         child: FutureBuilder<Recipe>(
                           future: futureRecipe,
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData) {
+                          builder: (context, index) {
+                            if (index.hasData) {
                               return Image.network(
-                                snapshot.data.imgURL,
+                                index.data.imgURL,
                                 fit: BoxFit.fill,
                               );
-                            } else if (snapshot.hasError) {
-                              return Text("${snapshot.error}");
+                            } else if (index.hasError) {
+                              return Text("${index.error}");
                             }
                             return CircularProgressIndicator();
                           },
@@ -218,8 +209,8 @@ class _MyHomepageState extends State<MyHomepage> {
                           alignment: AlignmentDirectional.bottomCenter,
                           child: FutureBuilder<Recipe>(
                             future: futureRecipe,
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
+                            builder: (context, index) {
+                              if (index.hasData) {
                                 return Container(
                                   padding: EdgeInsets.symmetric(horizontal: 10),
                                   decoration: BoxDecoration(
@@ -229,7 +220,7 @@ class _MyHomepageState extends State<MyHomepage> {
                                   width:
                                       MediaQuery.of(context).size.width * 0.7,
                                   child: Text(
-                                    snapshot.data.title,
+                                    index.data.title,
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontFamily: 'OpenSans',
@@ -237,8 +228,8 @@ class _MyHomepageState extends State<MyHomepage> {
                                     ),
                                   ),
                                 );
-                              } else if (snapshot.hasError) {
-                                return Text("${snapshot.error}");
+                              } else if (index.hasError) {
+                                return Text("${index.error}");
                               }
                               return CircularProgressIndicator();
                             },
