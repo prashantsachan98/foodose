@@ -34,7 +34,7 @@ Future<Recipe> fetchRecipe() async {
   try {
     var response = await http.get(uri, headers: headers);
     Map<String, dynamic> data = json.decode(response.body);
-    Recipe recipe = new Recipe.fromMap(data);
+    Recipe recipe = Recipe.fromMap(data);
     return recipe;
   } catch (err) {
     throw err.toString();
@@ -189,7 +189,7 @@ class _MyHomepageState extends State<MyHomepage> {
                         margin: EdgeInsets.symmetric(vertical: 4),
                         //borderRadius: BorderRadius.circular(20.0),
 
-                        child: FutureBuilder<Recipe>(
+                        /*  child: FutureBuilder<Recipe>(
                           future: futureRecipe,
                           builder: (context, index) {
                             if (index.hasData) {
@@ -202,7 +202,7 @@ class _MyHomepageState extends State<MyHomepage> {
                             }
                             return CircularProgressIndicator();
                           },
-                        ),
+                        ),*/
                         //Image.asset('assets/images/food.jpg'),
                       ),
                       Container(
@@ -220,7 +220,7 @@ class _MyHomepageState extends State<MyHomepage> {
                                   width:
                                       MediaQuery.of(context).size.width * 0.7,
                                   child: Text(
-                                    index.data.title,
+                                    index.data.id.toString(),
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontFamily: 'OpenSans',

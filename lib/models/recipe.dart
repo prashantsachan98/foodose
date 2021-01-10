@@ -1,3 +1,9 @@
+class RecipeList {
+  List<Recipe> recipes;
+
+  RecipeList({this.recipes});
+}
+
 class Recipe {
   final int id;
   final String title, imgURL;
