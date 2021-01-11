@@ -13,13 +13,14 @@ import 'dart:convert';
 import 'dart:io';
 import './models/joke.dart';
 
-// recipe
+//  random recipe
 
 final String _baseURL = "api.spoonacular.com";
 const String API_KEY = "254d7e3cb60949c7a71f3e329b3b555d";
 
-Future<Recipe> fetchRecipe() async {
+Future<List<Recipe>> fetchRandomRecipe() async {
   Map<String, String> parameters = {
+    'number': '5',
     'apiKey': API_KEY,
   };
   Uri uri = Uri.https(
@@ -34,8 +35,10 @@ Future<Recipe> fetchRecipe() async {
   try {
     var response = await http.get(uri, headers: headers);
     Map<String, dynamic> data = json.decode(response.body);
-    Recipe recipe = Recipe.fromMap(data);
-    return recipe;
+    print(data);
+    var list = data['recipes'] as List;
+    List<Recipe> dataList = list?.map((i) => Recipe.fromMap(i))?.toList() ?? [];
+    return dataList;
   } catch (err) {
     throw err.toString();
   }
@@ -96,13 +99,13 @@ class MyHomepage extends StatefulWidget {
 
 class _MyHomepageState extends State<MyHomepage> {
   int _index = 0;
-  Future<Recipe> futureRecipe;
+  Future<List<Recipe>> futureRecipe;
   Future<Joke> futureJoke;
 
   @override
   void initState() {
     super.initState();
-    futureRecipe = fetchRecipe();
+    futureRecipe = fetchRandomRecipe();
     futureJoke = fetchJoke();
   }
 
@@ -136,6 +139,8 @@ class _MyHomepageState extends State<MyHomepage> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: SearchBar(
+                onSearch: null,
+                onItemFound: null,
                 hintText: 'search',
                 searchBarStyle:
                     SearchBarStyle(borderRadius: BorderRadius.circular(20)),
@@ -165,92 +170,27 @@ class _MyHomepageState extends State<MyHomepage> {
                 },
               )),
           Container(
+            padding: EdgeInsets.all(0),
             color: Colors.white10,
             height: (MediaQuery.of(context).size.height * 1 -
-                MediaQuery.of(context).size.height * 0.36),
-            child: ListView.builder(
-              padding: EdgeInsets.only(top: 0.0),
-              itemCount: 4,
-              itemBuilder: (context, index) {
-                return Container(
-                  color: Colors.white,
-                  padding: EdgeInsets.symmetric(vertical: 5),
-                  height: MediaQuery.of(context).size.height * 0.32,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: <Widget>[
-                      Card(
-                        semanticContainer: true,
-                        clipBehavior: Clip.antiAliasWithSaveLayer,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        elevation: 5,
-                        margin: EdgeInsets.symmetric(vertical: 4),
-                        //borderRadius: BorderRadius.circular(20.0),
-
-                        /*  child: FutureBuilder<Recipe>(
-                          future: futureRecipe,
-                          builder: (context, index) {
-                            if (index.hasData) {
-                              return Image.network(
-                                index.data.imgURL,
-                                fit: BoxFit.fill,
-                              );
-                            } else if (index.hasError) {
-                              return Text("${index.error}");
-                            }
-                            return CircularProgressIndicator();
-                          },
-                        ),*/
-                        //Image.asset('assets/images/food.jpg'),
-                      ),
-                      Container(
-                          alignment: AlignmentDirectional.bottomCenter,
-                          child: FutureBuilder<Recipe>(
-                            future: futureRecipe,
-                            builder: (context, index) {
-                              if (index.hasData) {
-                                return Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 10),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20),
-                                      gradient: LinearGradient(
-                                          colors: [Colors.green, Colors.blue])),
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.7,
-                                  child: Text(
-                                    index.data.id.toString(),
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'OpenSans',
-                                      color: Colors.white70,
-                                    ),
-                                  ),
-                                );
-                              } else if (index.hasError) {
-                                return Text("${index.error}");
-                              }
-                              return CircularProgressIndicator();
-                            },
-                          )
-                          //Text(
-                          //'recipie name',
-                          //style: TextStyle(color: Colors.white, fontSize: 30),
-                          ),
-                      Card(
-                        elevation: 0,
-                        child: InkWell(
-                          splashColor: Colors.white,
-                          onTap: () {},
-                        ),
-                        color: Color.fromRGBO(0, 0, 0, 0),
-                      ),
-                    ],
-                  ),
-                );
+                MediaQuery.of(context).size.height * 0.33),
+            width: MediaQuery.of(context).size.width * 0.97,
+            child: FutureBuilder<List<Recipe>>(
+              future: futureRecipe,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return ListView.builder(
+                    itemCount: snapshot.data.length,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      return getRecipeView(snapshot.data[index]);
+                    },
+                  );
+                } else if (snapshot.hasError) {
+                  return Text("${snapshot.error}");
+                }
+                return CircularProgressIndicator();
               },
-              scrollDirection: Axis.vertical,
             ),
           )
         ],
@@ -274,6 +214,50 @@ class _MyHomepageState extends State<MyHomepage> {
             FloatingNavbarItem(icon: Icons.recent_actors, title: 'recent'),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget getRecipeView(Recipe recipe) {
+    return Container(
+      child: Stack(
+        children: <Widget>[
+          InkWell(
+            onTap: () {},
+            splashColor: Color.fromRGBO(139, 0, 0, 1),
+            child: Card(
+              semanticContainer: true,
+              clipBehavior: Clip.antiAliasWithSaveLayer,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+              elevation: 5,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  image: DecorationImage(
+                    image: NetworkImage(recipe.imgURL),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: Container(
+                  height: MediaQuery.of(context).size.height * 0.2,
+                  padding: EdgeInsets.all(5),
+                  child: Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Text(recipe.title,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                          color: Colors.white,
+                        )),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
