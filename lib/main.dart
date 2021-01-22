@@ -12,37 +12,83 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:io';
 import './models/joke.dart';
+import 'dart:math';
+
+//import 'views/description.dart';
+//import './models/instruction.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import 'package:flutter/services.dart' show rootBundle;
+
+//...
+loadJson() async {
+  String data = await rootBundle.loadString('assets/load_json/recipe.json');
+  var jsonResult = json.decode(data);
+  var list = jsonResult['recipes'] as List;
+  List<Recipe> odataList = list?.map((i) => Recipe.fromMap(i))?.toList() ?? [];
+  print(odataList);
+  return odataList;
+}
 
 //  random recipe
-
 final String _baseURL = "api.spoonacular.com";
 const String API_KEY = "254d7e3cb60949c7a71f3e329b3b555d";
 
 Future<List<Recipe>> fetchRandomRecipe() async {
-  Map<String, String> parameters = {
-    'number': '5',
-    'apiKey': API_KEY,
-  };
-  Uri uri = Uri.https(
-    _baseURL,
-    '/recipes/random',
-    parameters,
-  );
-  Map<String, String> headers = {
-    HttpHeaders.contentTypeHeader: 'application/json',
-  };
+  // Map<String, String> parameters = {
+  //   'number': '5000',
+  //  'apiKey': API_KEY,
+  //};
+  // Uri uri = Uri.https(
+  // _baseURL,
+  //'/recipes/random',
+  //parameters,
+  //);
+
+  // print(uri);
+  //Map<String, String> headers = {
+  // HttpHeaders.contentTypeHeader: 'application/json',
+  //};
 
   try {
-    var response = await http.get(uri, headers: headers);
-    Map<String, dynamic> data = json.decode(response.body);
-    print(data);
-    var list = data['recipes'] as List;
+    String data = await rootBundle.loadString('assets/load_json/recipe.json');
+    var jsonResult = json.decode(data);
+    var list = jsonResult['recipes'] as List;
     List<Recipe> dataList = list?.map((i) => Recipe.fromMap(i))?.toList() ?? [];
     return dataList;
   } catch (err) {
     throw err.toString();
   }
 }
+
+//description
+/*Future<Stept> fetchStep() async {
+  Map<String, String> parameter = {
+    'apiKey': API_KEY,
+    'stepBreakdown': 'false',
+  };
+  Uri uri = Uri.https(
+    _baseURL,
+    '/recipes/$id/analyzedInstructions',
+    parameter,
+  );
+  print(uri);
+  Map<String, String> headers = {
+    HttpHeaders.contentTypeHeader: 'application/json',
+  };
+  try {
+    var response = await http.get(uri, headers: headers);
+    Map<String, dynamic> data = json.decode(response.body);
+    //var list = data['steps'] as List;
+    //List<Stept> dataList = list?.map((i) => Stept.fromJson(i))?.toList() ?? [];
+    Stept stept = Stept.fromJson(data);
+    print(data);
+
+    return stept;
+  } catch (err) {
+    throw err.toString();
+  }
+}*/
 
 //joke
 
@@ -68,6 +114,9 @@ Future<Joke> fetchJoke() async {
     throw err.toString();
   }
 }
+
+Random random = new Random();
+int randomNumber = random.nextInt(10);
 
 void main() {
   SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
@@ -101,12 +150,18 @@ class _MyHomepageState extends State<MyHomepage> {
   int _index = 0;
   Future<List<Recipe>> futureRecipe;
   Future<Joke> futureJoke;
+  // Future<Stept> futureStep;
 
   @override
   void initState() {
     super.initState();
     futureRecipe = fetchRandomRecipe();
     futureJoke = fetchJoke();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await loadJson();
+    });
+
+    // futureStep = fetchStep();
   }
 
   @override
@@ -180,10 +235,11 @@ class _MyHomepageState extends State<MyHomepage> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return ListView.builder(
-                    itemCount: snapshot.data.length,
+                    itemCount: 10,
                     shrinkWrap: true,
                     itemBuilder: (context, index) {
-                      return getRecipeView(snapshot.data[index]);
+                      randomNumber++;
+                      return getRecipeView(snapshot.data[randomNumber]);
                     },
                   );
                 } else if (snapshot.hasError) {
@@ -219,11 +275,24 @@ class _MyHomepageState extends State<MyHomepage> {
   }
 
   Widget getRecipeView(Recipe recipe) {
+    _launchURL() async {
+      final url = recipe.sourceUrl.toString();
+      if (await canLaunch(url)) {
+        await launch(
+          url,
+          forceWebView: true,
+          enableJavaScript: true,
+        );
+      } else {
+        throw 'Could not launch $url';
+      }
+    }
+
     return Container(
       child: Stack(
         children: <Widget>[
           InkWell(
-            onTap: () {},
+            onTap: _launchURL,
             splashColor: Color.fromRGBO(139, 0, 0, 1),
             child: Card(
               semanticContainer: true,
@@ -246,12 +315,14 @@ class _MyHomepageState extends State<MyHomepage> {
                   padding: EdgeInsets.all(5),
                   child: Align(
                     alignment: Alignment.bottomLeft,
-                    child: Text(recipe.title,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          color: Colors.white,
-                        )),
+                    child: Text(
+                      recipe.title,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
                 ),
               ),

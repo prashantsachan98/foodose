@@ -30,15 +30,17 @@ dependencies:
   cupertino_icons: ^1.0.0
   flappy_search_bar: ^1.7.2
   floating_bottom_navigation_bar: ^1.4.1
+  url_launcher: ^5.7.10
   http: ^0.12.2
-  json_annotation: ^2.0.0
+  json_annotation: ^3.1.1
  # webview_flutter: ^1.0.7
+
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  build_runner: ^1.0.0
-  json_serializable: ^2.0.0
+  build_runner: ^1.10.13
+  json_serializable: ^3.5.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -53,7 +55,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-   - assets/images/food.jpg
+   - assets/load_json/recipe.json
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
