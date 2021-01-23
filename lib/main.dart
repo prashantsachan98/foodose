@@ -21,14 +21,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
 //...
-loadJson() async {
-  String data = await rootBundle.loadString('assets/load_json/recipe.json');
-  var jsonResult = json.decode(data);
-  var list = jsonResult['recipes'] as List;
-  List<Recipe> odataList = list?.map((i) => Recipe.fromMap(i))?.toList() ?? [];
-  print(odataList);
-  return odataList;
-}
 
 //  random recipe
 final String _baseURL = "api.spoonacular.com";
@@ -55,6 +47,7 @@ Future<List<Recipe>> fetchRandomRecipe() async {
     var jsonResult = json.decode(data);
     var list = jsonResult['recipes'] as List;
     List<Recipe> dataList = list?.map((i) => Recipe.fromMap(i))?.toList() ?? [];
+    print(dataList.length);
     return dataList;
   } catch (err) {
     throw err.toString();
@@ -116,7 +109,7 @@ Future<Joke> fetchJoke() async {
 }
 
 Random random = new Random();
-int randomNumber = random.nextInt(10);
+int randomNumber = random.nextInt(90);
 
 void main() {
   SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
@@ -157,9 +150,6 @@ class _MyHomepageState extends State<MyHomepage> {
     super.initState();
     futureRecipe = fetchRandomRecipe();
     futureJoke = fetchJoke();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await loadJson();
-    });
 
     // futureStep = fetchStep();
   }
@@ -230,22 +220,35 @@ class _MyHomepageState extends State<MyHomepage> {
             height: (MediaQuery.of(context).size.height * 1 -
                 MediaQuery.of(context).size.height * 0.33),
             width: MediaQuery.of(context).size.width * 0.97,
-            child: FutureBuilder<List<Recipe>>(
+            child: FutureBuilder(
               future: futureRecipe,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  return ListView.builder(
-                    itemCount: 10,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      randomNumber++;
-                      return getRecipeView(snapshot.data[randomNumber]);
-                    },
+                  return SingleChildScrollView(
+                    child: Column(
+                      children: <Widget>[
+                        getRecipeView(snapshot.data[randomNumber]),
+                        getRecipeView(snapshot.data[randomNumber + 1]),
+                        getRecipeView(snapshot.data[randomNumber + 2]),
+                        getRecipeView(snapshot.data[randomNumber + 3]),
+                        getRecipeView(snapshot.data[randomNumber + 4]),
+                        getRecipeView(snapshot.data[randomNumber + 5]),
+                        getRecipeView(snapshot.data[randomNumber + 6]),
+                        getRecipeView(snapshot.data[randomNumber + 7]),
+                        getRecipeView(snapshot.data[randomNumber + 8]),
+                        getRecipeView(snapshot.data[randomNumber + 9]),
+                      ],
+                    ),
                   );
                 } else if (snapshot.hasError) {
                   return Text("${snapshot.error}");
                 }
-                return CircularProgressIndicator();
+                return Transform.scale(
+                  scale: 0.2,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 20,
+                  ),
+                );
               },
             ),
           )
@@ -278,7 +281,7 @@ class _MyHomepageState extends State<MyHomepage> {
     _launchURL() async {
       final url = recipe.sourceUrl.toString();
       if (await canLaunch(url)) {
-        await launch(
+        launch(
           url,
           forceWebView: true,
           enableJavaScript: true,
@@ -315,12 +318,15 @@ class _MyHomepageState extends State<MyHomepage> {
                   padding: EdgeInsets.all(5),
                   child: Align(
                     alignment: Alignment.bottomLeft,
-                    child: Text(
-                      recipe.title,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                        color: Colors.white,
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+                      child: Text(
+                        recipe.title,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
