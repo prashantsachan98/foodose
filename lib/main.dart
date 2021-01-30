@@ -1,13 +1,14 @@
 import 'dart:ui';
 
-import 'package:flappy_search_bar/search_bar_style.dart';
+//import 'package:flappy_search_bar/search_bar_style.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flappy_search_bar/flappy_search_bar.dart';
+//import 'package:flappy_search_bar/flappy_search_bar.dart';
 import 'package:flutter/services.dart';
 import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.dart';
 import 'package:foodose/models/recipe.dart';
+import 'package:foodose/models/search.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:io';
@@ -25,6 +26,48 @@ import 'package:flutter/services.dart' show rootBundle;
 //  random recipe
 final String _baseURL = "api.spoonacular.com";
 const String API_KEY = "254d7e3cb60949c7a71f3e329b3b555d";
+
+/*Future<List<Recipe>> fList() async {
+  String data = await rootBundle.loadString('assets/load_json/recipe.json');
+  var jsonResult = json.decode(data);
+  var list = jsonResult['recipes'] as List;
+  List<Recipe> dataList = list?.map((i) => Recipe.fromMap(i))?.toList() ?? [];
+  List<Recipe> flist =
+      dataList.where((recipe) => recipe.title.startsWith('Lemon')).toList();
+  print(flist);
+  return flist;
+}*/
+
+//search
+Future<SList> flist(String text) async {
+  Map<String, String> parameter = {
+    'apiKey': API_KEY,
+    'number': '10',
+    'query': text,
+  };
+  Uri uri = Uri.https(
+    _baseURL,
+    '/recipes/autocomplete',
+    parameter,
+  );
+  Map<String, String> headers = {
+    HttpHeaders.contentTypeHeader: 'application/json',
+  };
+
+  try {
+    var response = await http.get(uri, headers: headers);
+    var jsonResult = json.decode(response.body);
+    SList sList = SList.fromJson(jsonResult);
+    int i = 0;
+    while (i < 9) {
+      print(sList.search[i].title);
+      i++;
+    }
+    return sList;
+  } catch (err) {
+    throw err.toString();
+  }
+}
 
 Future<List<Recipe>> fetchRandomRecipe() async {
   // Map<String, String> parameters = {
@@ -47,41 +90,11 @@ Future<List<Recipe>> fetchRandomRecipe() async {
     var jsonResult = json.decode(data);
     var list = jsonResult['recipes'] as List;
     List<Recipe> dataList = list?.map((i) => Recipe.fromMap(i))?.toList() ?? [];
-    print(dataList.length);
     return dataList;
   } catch (err) {
     throw err.toString();
   }
 }
-
-//description
-/*Future<Stept> fetchStep() async {
-  Map<String, String> parameter = {
-    'apiKey': API_KEY,
-    'stepBreakdown': 'false',
-  };
-  Uri uri = Uri.https(
-    _baseURL,
-    '/recipes/$id/analyzedInstructions',
-    parameter,
-  );
-  print(uri);
-  Map<String, String> headers = {
-    HttpHeaders.contentTypeHeader: 'application/json',
-  };
-  try {
-    var response = await http.get(uri, headers: headers);
-    Map<String, dynamic> data = json.decode(response.body);
-    //var list = data['steps'] as List;
-    //List<Stept> dataList = list?.map((i) => Stept.fromJson(i))?.toList() ?? [];
-    Stept stept = Stept.fromJson(data);
-    print(data);
-
-    return stept;
-  } catch (err) {
-    throw err.toString();
-  }
-}*/
 
 //joke
 
@@ -108,9 +121,7 @@ Future<Joke> fetchJoke() async {
   }
 }
 
-Random random = new Random();
-int randomNumber = random.nextInt(90);
-
+Random random = Random();
 void main() {
   SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
   // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -143,15 +154,22 @@ class _MyHomepageState extends State<MyHomepage> {
   int _index = 0;
   Future<List<Recipe>> futureRecipe;
   Future<Joke> futureJoke;
-  // Future<Stept> futureStep;
+  Future<SList> filter;
+  int randomNumber = random.nextInt(90);
+  String textString = '';
 
   @override
   void initState() {
     super.initState();
     futureRecipe = fetchRandomRecipe();
     futureJoke = fetchJoke();
+    filter = flist(textString);
+  }
 
-    // futureStep = fetchStep();
+  void doSomething(String text) {
+    setState(() {
+      textString = text;
+    });
   }
 
   @override
@@ -179,41 +197,64 @@ class _MyHomepageState extends State<MyHomepage> {
             height: MediaQuery.of(context).size.height * 0.03,
           ),
           Container(
-            height: MediaQuery.of(context).size.height * 0.12,
+            height: MediaQuery.of(context).size.height * 0.07,
             width: MediaQuery.of(context).size.width * 1,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: SearchBar(
-                onSearch: null,
-                onItemFound: null,
-                hintText: 'search',
-                searchBarStyle:
-                    SearchBarStyle(borderRadius: BorderRadius.circular(20)),
+              child: TextField(
+                decoration: new InputDecoration(
+                  labelText: "Search...",
+                  fillColor: Colors.white,
+                  border: new OutlineInputBorder(
+                    borderRadius: new BorderRadius.circular(25.0),
+                    borderSide: new BorderSide(),
+                  ),
+                ),
+                style: TextStyle(fontFamily: 'Poppins'),
+                onChanged: (text) {
+                  doSomething(text);
+                  return FutureBuilder<SList>(
+                      future: flist(text),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return ListView.builder(
+                            itemCount: 9,
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                title: Text(snapshot.data.search[index].title),
+                              );
+                            },
+                          );
+                        }
+                        return CircularProgressIndicator();
+                      });
+                },
               ),
             ),
           ),
           Container(
-              height: MediaQuery.of(context).size.height * 0.07,
-              color: Colors.white10,
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              child: FutureBuilder<Joke>(
-                future: futureJoke,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    print(snapshot.data.joke);
-                    return Text(
-                      snapshot.data.joke,
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          fontStyle: FontStyle.italic),
-                    );
-                  } else if (snapshot.hasError) {
-                    return Text("${snapshot.error}");
-                  }
-                  return CircularProgressIndicator();
-                },
-              )),
+            height: MediaQuery.of(context).size.height * 0.07,
+            color: Colors.white10,
+            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+            child: FutureBuilder<Joke>(
+              future: futureJoke,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  print(snapshot.data.joke);
+                  return Text(
+                    snapshot.data.joke,
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        fontStyle: FontStyle.italic),
+                  );
+                } else if (snapshot.hasError) {
+                  return Text("${snapshot.error}");
+                }
+                return CircularProgressIndicator();
+              },
+            ),
+          ),
           Container(
             padding: EdgeInsets.all(0),
             color: Colors.white10,
