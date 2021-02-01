@@ -110,10 +110,10 @@ Future<Joke> fetchJoke() async {
 }
 
 void main() {
-  SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
-  // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-  // statusBarColor: Colors.transparent,
-  // ));
+  //SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+  ));
   runApp(Foodose());
 }
 
@@ -143,6 +143,7 @@ class _MyHomepageState extends State<MyHomepage> {
   Future<Joke> futureJoke;
   Future<SList> filter;
   String _textString = '';
+  bool _folded = true;
 
   @override
   void initState() {
@@ -154,6 +155,7 @@ class _MyHomepageState extends State<MyHomepage> {
 
   void doSomething(String text) {
     setState(() {
+      // _folded = !_folded;
       _textString = text;
     });
   }
@@ -179,17 +181,41 @@ class _MyHomepageState extends State<MyHomepage> {
         ],
       ),*/
       body: Stack(
+        alignment: Alignment.centerRight,
         children: [
           ListView(
+            padding: EdgeInsets.zero,
             // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              SizedBox(
-                height: 60,
+              Container(
+                height: 20,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: [Colors.green, Colors.blue]),
+                ),
               ),
               Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: [Colors.green, Colors.blue]),
+                ),
+                padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
+                height: 70,
+                child: Text(
+                  'Hello Prashant ',
+                  style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.w500,
+                      fontFamily: 'poppins',
+                      //backgroundColor: Colors.teal,
+                      color: Colors.white),
+                ),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: [Colors.green, Colors.blue]),
+                ),
                 // height: MediaQuery.of(context).size.height * 0.07,
-                color: Colors.white10,
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                //color: Colors.white10,
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
                 child: FutureBuilder<Joke>(
                   future: futureJoke,
                   builder: (context, snapshot) {
@@ -211,15 +237,20 @@ class _MyHomepageState extends State<MyHomepage> {
               ),
               Container(
                 padding: EdgeInsets.all(0),
-                color: Colors.white10,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: [Colors.green, Colors.blue]),
+                ),
+                //color: Colors.white10,
                 height: (MediaQuery.of(context).size.height * 1 -
-                    MediaQuery.of(context).size.height * 0.33),
+                    MediaQuery.of(context).size.height * 0.25),
                 width: MediaQuery.of(context).size.width * 0.97,
                 child: FutureBuilder(
                   future: futureRecipe,
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       return SingleChildScrollView(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 5, vertical: 10),
                         child: Column(
                           children: <Widget>[
                             getRecipeView(snapshot.data[0]),
@@ -250,63 +281,129 @@ class _MyHomepageState extends State<MyHomepage> {
             ],
           ),
           Column(
+            //mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.05,
+                height: MediaQuery.of(context).size.height * 0.04,
               ),
-              Container(
-                color: Colors.white,
-                height: MediaQuery.of(context).size.height * 0.07,
-                width: MediaQuery.of(context).size.width * 1,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: TextField(
-                    decoration: new InputDecoration(
-                      labelText: "Search...",
-                      fillColor: Colors.white,
-                      border: new OutlineInputBorder(
-                        borderRadius: new BorderRadius.circular(20.0),
-                        borderSide: new BorderSide(),
+              AnimatedContainer(
+                alignment: Alignment.centerRight,
+                margin: EdgeInsets.symmetric(horizontal: 15),
+                duration: Duration(milliseconds: 300),
+                width: _folded ? 56 : MediaQuery.of(context).size.width * 1,
+                height: 56,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(32),
+                  color: Colors.white,
+                  boxShadow: kElevationToShadow[6],
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        padding: EdgeInsets.only(left: 16),
+                        child: !_folded
+                            ? TextField(
+                                onSubmitted: (text) {
+                                  doSomething(text);
+                                },
+                                decoration: InputDecoration(
+                                    hintText: 'Search',
+                                    hintStyle:
+                                        TextStyle(color: Colors.blue[300]),
+                                    border: InputBorder.none),
+                              )
+                            : null,
                       ),
                     ),
-                    style: TextStyle(fontFamily: 'Poppins'),
-                    onSubmitted: (text) {
-                      doSomething(text);
-                    },
-                  ),
+                    Container(
+                      child: Material(
+                        type: MaterialType.transparency,
+                        child: InkWell(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(_folded ? 32 : 0),
+                            topRight: Radius.circular(32),
+                            bottomLeft: Radius.circular(_folded ? 32 : 0),
+                            bottomRight: Radius.circular(32),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Icon(
+                              _folded ? Icons.search : Icons.close,
+                              color: Colors.blue[900],
+                            ),
+                          ),
+                          onTap: () {
+                            setState(() {
+                              _folded = !_folded;
+                              _textString = '';
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               Container(
                 height: 550,
-                color: Colors.white,
                 child: FutureBuilder<SList>(
                     future: flist(_textString),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        return ListView.separated(
-                          separatorBuilder: (BuildContext context, int index) =>
-                              Divider(),
-                          itemCount: 9,
-                          itemBuilder: (context, index) {
-                            return Container(
-                              padding: EdgeInsets.symmetric(horizontal: 30),
-                              height: 40,
-                              child: Material(
-                                child: InkWell(
-                                  splashColor: Colors.redAccent,
-                                  onTap: () {},
-                                  child: Container(
-                                      //color: Colors.white,
+                        return Container(
+                          decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                  colors: [Colors.green, Colors.blue])),
+                          child: ListView.separated(
+                            //   padding: EdgeInsets.zero,
+                            separatorBuilder:
+                                (BuildContext context, int index) => Divider(
+                              height: 0,
+                            ),
+                            itemCount: 9,
+                            itemBuilder: (context, index) {
+                              return Container(
+                                decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                        colors: [Colors.green, Colors.blue])),
+                                // color: Colors.white.withOpacity(0.9),
+                                padding: EdgeInsets.symmetric(horizontal: 15),
+                                height: 58,
+                                child: Material(
+                                  child: InkWell(
+                                    splashColor: Colors.redAccent,
+                                    onTap: () {},
+                                    child: Container(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 20),
+                                      // color: Colors.white,
                                       alignment: Alignment.centerLeft,
                                       height: 50,
-                                      width:
-                                          MediaQuery.of(context).size.width * 1,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(0),
+                                        gradient: LinearGradient(colors: [
+                                          Colors.red,
+                                          Colors.purple
+                                        ]),
+                                        boxShadow: kElevationToShadow[6],
+                                      ),
+                                      //width:
+                                      //  MediaQuery.of(context).size.width * 1,
                                       child: Text(
-                                          snapshot.data.search[index].title)),
+                                        snapshot.data.search[index].title
+                                            .toUpperCase(),
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w300,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            );
-                          },
+                              );
+                            },
+                          ),
                         );
                       }
                       return SizedBox.shrink();
@@ -316,14 +413,19 @@ class _MyHomepageState extends State<MyHomepage> {
           )
         ],
       ),
-      bottomNavigationBar: SizedBox(
+      bottomNavigationBar: Container(
+        padding: EdgeInsets.zero,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(colors: [Colors.green, Colors.blue]),
+        ),
         //  height: MediaQuery.of(context).size.height * 1 -
         //     MediaQuery.of(context).size.height * 0.8945,
         child: FloatingNavbar(
+          //  padding: EdgeInsets.zero,
           iconSize: 20,
-          backgroundColor: CupertinoColors.white,
+          backgroundColor: Colors.deepPurple,
           selectedItemColor: Colors.greenAccent,
-          unselectedItemColor: Colors.grey,
+          unselectedItemColor: Colors.white,
           onTap: (int val) => setState(() => _index = val),
           currentIndex: _index,
           items: [
