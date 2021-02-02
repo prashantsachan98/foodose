@@ -9,10 +9,12 @@ import 'package:flutter/services.dart';
 import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.dart';
 import 'package:foodose/models/recipe.dart';
 import 'package:foodose/models/search.dart';
+import 'package:foodose/view/searchedRecipe.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:io';
 import './models/joke.dart';
+import 'package:easy_debounce/easy_debounce.dart';
 
 //import 'views/description.dart';
 //import './models/instruction.dart';
@@ -88,7 +90,7 @@ Future<List<Recipe>> fetchRandomRecipe() async {
 
 Future<Joke> fetchJoke() async {
   Map<String, String> parameter = {
-    'apiKey': API_KEY2,
+    'apiKey': API_KEY1,
   };
   Uri uri = Uri.https(
     _baseURL,
@@ -281,13 +283,13 @@ class _MyHomepageState extends State<MyHomepage> {
             ],
           ),
           Column(
-            //mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.04,
               ),
               AnimatedContainer(
-                alignment: Alignment.centerRight,
+                //alignment: Alignment.centerRight,
                 margin: EdgeInsets.symmetric(horizontal: 15),
                 duration: Duration(milliseconds: 300),
                 width: _folded ? 56 : MediaQuery.of(context).size.width * 1,
@@ -304,8 +306,14 @@ class _MyHomepageState extends State<MyHomepage> {
                         padding: EdgeInsets.only(left: 16),
                         child: !_folded
                             ? TextField(
-                                onSubmitted: (text) {
-                                  doSomething(text);
+                                onChanged: (text) {
+                                  EasyDebounce.debounce(
+                                    'my-debouncer', // <-- An ID for this particular debouncer
+                                    Duration(
+                                        milliseconds:
+                                            500), // <-- The debounce duration
+                                    () => doSomething(text),
+                                  );
                                 },
                                 decoration: InputDecoration(
                                     hintText: 'Search',
@@ -336,7 +344,7 @@ class _MyHomepageState extends State<MyHomepage> {
                           onTap: () {
                             setState(() {
                               _folded = !_folded;
-                              _textString = '';
+                              _textString = null;
                             });
                           },
                         ),
@@ -345,8 +353,11 @@ class _MyHomepageState extends State<MyHomepage> {
                   ],
                 ),
               ),
-              Container(
-                height: 550,
+              AnimatedContainer(
+                duration: Duration(milliseconds: 400),
+                height: _folded ? 0 : 550,
+                alignment: Alignment.centerRight,
+                // height: 550,
                 child: FutureBuilder<SList>(
                     future: flist(_textString),
                     builder: (context, snapshot) {
@@ -373,7 +384,16 @@ class _MyHomepageState extends State<MyHomepage> {
                                 child: Material(
                                   child: InkWell(
                                     splashColor: Colors.redAccent,
-                                    onTap: () {},
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                SearchedRecipe(snapshot
+                                                    .data.search[index].id
+                                                    .toString())),
+                                      );
+                                    },
                                     child: Container(
                                       padding:
                                           EdgeInsets.symmetric(horizontal: 20),
