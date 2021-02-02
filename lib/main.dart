@@ -306,6 +306,11 @@ class _MyHomepageState extends State<MyHomepage> {
                         padding: EdgeInsets.only(left: 16),
                         child: !_folded
                             ? TextField(
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                    RegExp('[a-zA-Z]'),
+                                  ),
+                                ],
                                 onChanged: (text) {
                                   EasyDebounce.debounce(
                                     'my-debouncer', // <-- An ID for this particular debouncer
