@@ -1,10 +1,7 @@
 import 'dart:ui';
-
-//import 'package:flappy_search_bar/search_bar_style.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-//import 'package:flappy_search_bar/flappy_search_bar.dart';
 import 'package:flutter/services.dart';
 import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.dart';
 import 'package:foodose/models/recipe.dart';
@@ -15,11 +12,7 @@ import 'dart:convert';
 import 'dart:io';
 import './models/joke.dart';
 import 'package:easy_debounce/easy_debounce.dart';
-
-//import 'views/description.dart';
-//import './models/instruction.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 //...
 
 //  random recipe
@@ -112,10 +105,10 @@ Future<Joke> fetchJoke() async {
 }
 
 void main() {
-  //SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+  SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+  /*SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
-  ));
+  ));*/
   runApp(Foodose());
 }
 
@@ -185,50 +178,55 @@ class _MyHomepageState extends State<MyHomepage> {
       body: Stack(
         alignment: Alignment.centerRight,
         children: [
-          ListView(
-            padding: EdgeInsets.zero,
-            // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Container(
-                height: 20,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [Colors.green, Colors.blue]),
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(colors: [Colors.green, Colors.blue]),
+            ),
+            height: MediaQuery.of(context).size.height * 1,
+            width: MediaQuery.of(context).size.width * 1,
+            child: Column(
+              //padding: EdgeInsets.zero,
+              // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Container(
+                  height: 20,
+                  width: MediaQuery.of(context).size.width * 1,
+                  decoration: BoxDecoration(
+                    gradient:
+                        LinearGradient(colors: [Colors.green, Colors.blue]),
+                  ),
                 ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [Colors.green, Colors.blue]),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  decoration: BoxDecoration(
+                    gradient:
+                        LinearGradient(colors: [Colors.green, Colors.blue]),
+                  ),
+                  padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
+                  child: Text(
+                    'Hello Prashant ',
+                    style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: 'poppins',
+                        //backgroundColor: Colors.teal,
+                        color: Colors.white),
+                  ),
                 ),
-                padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
-                height: 70,
-                child: Text(
-                  'Hello Prashant ',
-                  style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: 'poppins',
-                      //backgroundColor: Colors.teal,
-                      color: Colors.white),
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [Colors.green, Colors.blue]),
-                ),
-                // height: MediaQuery.of(context).size.height * 0.07,
-                //color: Colors.white10,
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
-                child: FutureBuilder<Joke>(
+                FutureBuilder<Joke>(
                   future: futureJoke,
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       print(snapshot.data.joke);
-                      return Text(
-                        snapshot.data.joke,
-                        style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            fontStyle: FontStyle.italic),
+                      return Container(
+                        padding: EdgeInsets.symmetric(horizontal: 5),
+                        child: Text(
+                          snapshot.data.joke,
+                          style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              fontStyle: FontStyle.italic),
+                        ),
                       );
                     } else if (snapshot.hasError) {
                       return Text("${snapshot.error}");
@@ -236,36 +234,30 @@ class _MyHomepageState extends State<MyHomepage> {
                     return CircularProgressIndicator();
                   },
                 ),
-              ),
-              Container(
-                padding: EdgeInsets.all(0),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [Colors.green, Colors.blue]),
-                ),
-                //color: Colors.white10,
-                height: (MediaQuery.of(context).size.height * 1 -
-                    MediaQuery.of(context).size.height * 0.25),
-                width: MediaQuery.of(context).size.width * 0.97,
-                child: FutureBuilder(
+                FutureBuilder(
                   future: futureRecipe,
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
-                      return SingleChildScrollView(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-                        child: Column(
-                          children: <Widget>[
-                            getRecipeView(snapshot.data[0]),
-                            getRecipeView(snapshot.data[1]),
-                            getRecipeView(snapshot.data[2]),
-                            getRecipeView(snapshot.data[3]),
-                            getRecipeView(snapshot.data[4]),
-                            getRecipeView(snapshot.data[5]),
-                            getRecipeView(snapshot.data[6]),
-                            getRecipeView(snapshot.data[7]),
-                            getRecipeView(snapshot.data[8]),
-                            getRecipeView(snapshot.data[9]),
-                          ],
+                      return Expanded(
+                        child: SingleChildScrollView(
+                          //physics: NeverScrollableScrollPhysics(),
+                          //shrinkWrap: true,
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                          child: Column(
+                            children: <Widget>[
+                              getRecipeView(snapshot.data[0]),
+                              getRecipeView(snapshot.data[1]),
+                              getRecipeView(snapshot.data[2]),
+                              getRecipeView(snapshot.data[3]),
+                              getRecipeView(snapshot.data[4]),
+                              getRecipeView(snapshot.data[5]),
+                              getRecipeView(snapshot.data[6]),
+                              getRecipeView(snapshot.data[7]),
+                              getRecipeView(snapshot.data[8]),
+                              getRecipeView(snapshot.data[9]),
+                            ],
+                          ),
                         ),
                       );
                     } else if (snapshot.hasError) {
@@ -279,8 +271,8 @@ class _MyHomepageState extends State<MyHomepage> {
                     );
                   },
                 ),
-              )
-            ],
+              ],
+            ),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -291,7 +283,7 @@ class _MyHomepageState extends State<MyHomepage> {
               AnimatedContainer(
                 //alignment: Alignment.centerRight,
                 margin: EdgeInsets.symmetric(horizontal: 15),
-                duration: Duration(milliseconds: 300),
+                duration: Duration(milliseconds: 150),
                 width: _folded ? 56 : MediaQuery.of(context).size.width * 1,
                 height: 56,
                 decoration: BoxDecoration(
