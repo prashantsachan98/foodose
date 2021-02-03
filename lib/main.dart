@@ -12,7 +12,8 @@ import 'dart:convert';
 import 'dart:io';
 import './models/joke.dart';
 import 'package:easy_debounce/easy_debounce.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:your_splash/your_splash.dart';
+//import 'package:url_launcher/url_launcher.dart';
 //...
 
 //  random recipe
@@ -119,10 +120,23 @@ class Foodose extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Custom Fonts',
-      // Set Raleway as the default app font.
-      theme: ThemeData(fontFamily: 'OpenSans'),
-      home: MyHomepage(),
+      debugShowCheckedModeBanner: false,
+      home: SplashScreen.timed(
+        seconds: 3,
+        route: MaterialPageRoute(builder: (_) => MyHomepage()),
+        body: Scaffold(
+          body: InkWell(
+            child: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  fit: BoxFit.cover,
+                  image: NetworkImage('https://bit.ly/3hD5Tj8'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -179,9 +193,6 @@ class _MyHomepageState extends State<MyHomepage> {
         alignment: Alignment.centerRight,
         children: [
           Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(colors: [Colors.green, Colors.blue]),
-            ),
             height: MediaQuery.of(context).size.height * 1,
             width: MediaQuery.of(context).size.width * 1,
             child: Column(
@@ -191,26 +202,18 @@ class _MyHomepageState extends State<MyHomepage> {
                 Container(
                   height: 20,
                   width: MediaQuery.of(context).size.width * 1,
-                  decoration: BoxDecoration(
-                    gradient:
-                        LinearGradient(colors: [Colors.green, Colors.blue]),
-                  ),
                 ),
                 Container(
                   alignment: Alignment.centerLeft,
-                  decoration: BoxDecoration(
-                    gradient:
-                        LinearGradient(colors: [Colors.green, Colors.blue]),
-                  ),
                   padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
                   child: Text(
                     'Hello Prashant ',
                     style: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.w500,
-                        fontFamily: 'poppins',
-                        //backgroundColor: Colors.teal,
-                        color: Colors.white),
+                      fontSize: 30,
+                      fontWeight: FontWeight.w500,
+                      fontFamily: 'poppins',
+                      //backgroundColor: Colors.teal,
+                    ),
                   ),
                 ),
                 FutureBuilder<Joke>(
@@ -219,6 +222,7 @@ class _MyHomepageState extends State<MyHomepage> {
                     if (snapshot.hasData) {
                       print(snapshot.data.joke);
                       return Container(
+                        alignment: Alignment.centerLeft,
                         padding: EdgeInsets.symmetric(horizontal: 5),
                         child: Text(
                           snapshot.data.joke,
@@ -264,9 +268,13 @@ class _MyHomepageState extends State<MyHomepage> {
                       return Text("${snapshot.error}");
                     }
                     return Transform.scale(
-                      scale: 0.2,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 20,
+                      scale: 1,
+                      child: Container(
+                        height: 300,
+                        alignment: Alignment.center,
+                        child: CircularProgressIndicator(
+                            //strokeWidth: 20,
+                            ),
                       ),
                     );
                   },
@@ -360,9 +368,9 @@ class _MyHomepageState extends State<MyHomepage> {
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         return Container(
-                          decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                  colors: [Colors.green, Colors.blue])),
+                          // padding: EdgeInsets.zero,
+                          color: Colors.white70,
+                          // color: Color.fromRGBO(1, 1, 1, 0.2),
                           child: ListView.separated(
                             //   padding: EdgeInsets.zero,
                             separatorBuilder:
@@ -373,9 +381,9 @@ class _MyHomepageState extends State<MyHomepage> {
                             itemBuilder: (context, index) {
                               return Container(
                                 decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                        colors: [Colors.green, Colors.blue])),
-                                // color: Colors.white.withOpacity(0.9),
+                                    // borderRadius: BorderRadius.circular(30),
+                                    ),
+                                //color: Colors.white.withOpacity(0.9),
                                 padding: EdgeInsets.symmetric(horizontal: 15),
                                 height: 58,
                                 child: Material(
@@ -391,27 +399,19 @@ class _MyHomepageState extends State<MyHomepage> {
                                                     .toString())),
                                       );
                                     },
+
+                                    //width:
+                                    //  MediaQuery.of(context).size.width * 1,
                                     child: Container(
                                       padding:
-                                          EdgeInsets.symmetric(horizontal: 20),
-                                      // color: Colors.white,
+                                          EdgeInsets.symmetric(horizontal: 10),
                                       alignment: Alignment.centerLeft,
-                                      height: 50,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(0),
-                                        gradient: LinearGradient(colors: [
-                                          Colors.red,
-                                          Colors.purple
-                                        ]),
-                                        boxShadow: kElevationToShadow[6],
-                                      ),
-                                      //width:
-                                      //  MediaQuery.of(context).size.width * 1,
                                       child: Text(
                                         snapshot.data.search[index].title
                                             .toUpperCase(),
                                         style: TextStyle(
-                                          color: Colors.white,
+                                          fontSize: 15,
+                                          color: Colors.black,
                                           fontWeight: FontWeight.w300,
                                         ),
                                       ),
@@ -432,16 +432,14 @@ class _MyHomepageState extends State<MyHomepage> {
       ),
       bottomNavigationBar: Container(
         padding: EdgeInsets.zero,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(colors: [Colors.green, Colors.blue]),
-        ),
+
         //  height: MediaQuery.of(context).size.height * 1 -
         //     MediaQuery.of(context).size.height * 0.8945,
         child: FloatingNavbar(
           //  padding: EdgeInsets.zero,
           iconSize: 20,
           backgroundColor: Colors.deepPurple,
-          selectedItemColor: Colors.greenAccent,
+          selectedItemColor: Colors.deepPurple,
           unselectedItemColor: Colors.white,
           onTap: (int val) => setState(() => _index = val),
           currentIndex: _index,
@@ -459,7 +457,7 @@ class _MyHomepageState extends State<MyHomepage> {
   }
 
   Widget getRecipeView(Recipe recipe) {
-    _launchURL() async {
+    /* _launchURL() async {
       final url = recipe.sourceUrl.toString();
       if (await canLaunch(url)) {
         launch(
@@ -470,13 +468,19 @@ class _MyHomepageState extends State<MyHomepage> {
       } else {
         throw 'Could not launch $url';
       }
-    }
+    }*/
 
     return Container(
       child: Stack(
         children: <Widget>[
           InkWell(
-            onTap: _launchURL,
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          SearchedRecipe(recipe.id.toString())));
+            },
             splashColor: Color.fromRGBO(139, 0, 0, 1),
             child: Card(
               semanticContainer: true,
