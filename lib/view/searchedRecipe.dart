@@ -111,11 +111,13 @@ class _SearchedRecipeState extends State<SearchedRecipe> {
                           alignment: Alignment.center,
                           height: 40,
                           width: MediaQuery.of(context).size.width * 1,
-                          child: Text(
-                            snapshot.data.title,
-                            style: TextStyle(
-                              fontSize: 25,
-                              fontWeight: FontWeight.normal,
+                          child: FittedBox(
+                            child: Text(
+                              snapshot.data.title,
+                              style: TextStyle(
+                                fontSize: 25,
+                                fontWeight: FontWeight.normal,
+                              ),
                             ),
                           ),
                         ),

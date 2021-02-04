@@ -6,13 +6,14 @@ import 'package:flutter/services.dart';
 import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.dart';
 import 'package:foodose/models/recipe.dart';
 import 'package:foodose/models/search.dart';
+import 'package:foodose/view/meal_planner.dart';
 import 'package:foodose/view/searchedRecipe.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:io';
 import './models/joke.dart';
 import 'package:easy_debounce/easy_debounce.dart';
-import 'package:your_splash/your_splash.dart';
+//import 'package:your_splash/your_splash.dart';
 //import 'package:url_launcher/url_launcher.dart';
 //...
 
@@ -121,22 +122,10 @@ class Foodose extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SplashScreen.timed(
-        seconds: 3,
-        route: MaterialPageRoute(builder: (_) => MyHomepage()),
-        body: Scaffold(
-          body: InkWell(
-            child: Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  fit: BoxFit.cover,
-                  image: NetworkImage('https://bit.ly/3hD5Tj8'),
-                ),
-              ),
-            ),
-          ),
-        ),
+      theme: ThemeData(
+        primaryColor: Colors.amberAccent[700],
       ),
+      home: MyHomepage(),
     );
   }
 }
@@ -441,7 +430,13 @@ class _MyHomepageState extends State<MyHomepage> {
           backgroundColor: Colors.deepPurple,
           selectedItemColor: Colors.deepPurple,
           unselectedItemColor: Colors.white,
-          onTap: (int val) => setState(() => _index = val),
+          onTap: (int val) => setState(() {
+            _index = val;
+            if (_index == 2) {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => MealPlanner()));
+            }
+          }),
           currentIndex: _index,
           items: [
             FloatingNavbarItem(
