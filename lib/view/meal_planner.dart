@@ -1,43 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:foodose/main.dart';
-import '../models/meal_plan.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'dart:io';
+import 'package:foodose/models/ui_provider.dart';
+import 'package:foodose/view/meal_plan_recipes.dart';
+
 import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.dart';
-
-//generate meal plan
-final String _baseURL = "api.spoonacular.com";
-const String API_KEY3 = "5d7b6cc60c0c41f89d54d1becb453300";
-Future<MealPlan> fetchMealPlan() async {
-  print('step2');
-  Map<String, String> parameters = {
-    'apiKey': API_KEY3,
-    'timeFrame': '1',
-    //'targetCalories': '200',
-  };
-  Uri uri = Uri.https(
-    _baseURL,
-    '/mealplanner/generate',
-    parameters,
-  );
-
-  print(uri);
-  Map<String, String> headers = {
-    HttpHeaders.contentTypeHeader: 'application/json',
-  };
-
-  try {
-    var response = await http.get(uri, headers: headers);
-    final jsonResponse = json.decode(response.body);
-    MealPlan mealPlanList = new MealPlan.fromJson(jsonResponse);
-    print("generated meal title");
-    print(mealPlanList.meals[0].title);
-    return mealPlanList;
-  } catch (err) {
-    throw err.toString();
-  }
-}
+import 'package:provider/provider.dart';
 
 //widget
 
@@ -60,16 +27,15 @@ class _MealPlannerState extends State<MealPlanner> {
     'Primal',
     'Whole30',
   ];
-  Future<MealPlan> futureMealPlan;
+  //Future<MealPlan> futureMealPlan;
   double _sliderVal = 1;
   String _diet = 'None';
-  int _index = 0;
+  // int _index = 0;
 
   @override
   void initState() {
-    print('step3');
+    // futureMealPlan = fetchMealPlan();
     super.initState();
-    futureMealPlan = fetchMealPlan();
   }
 
   @override
@@ -205,7 +171,12 @@ class _MealPlannerState extends State<MealPlanner> {
                       ),
                       //_searchMealPlan function is above the build method
                       onPressed: () {
-                        fetchMealPlan();
+                        MealRecipeList(_sliderVal, _diet);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => MealRecipeList(
+                                    this._sliderVal, this._diet)));
                       },
                     ),
                   ],
@@ -218,29 +189,34 @@ class _MealPlannerState extends State<MealPlanner> {
 
             //  height: MediaQuery.of(context).size.height * 1 -
             //     MediaQuery.of(context).size.height * 0.8945,
-            child: FloatingNavbar(
-              //  padding: EdgeInsets.zero,
-              iconSize: 20,
-              backgroundColor: Colors.deepPurple,
-              selectedItemColor: Colors.deepPurple,
-              unselectedItemColor: Colors.white,
-              onTap: (int val) => setState(() {
-                _index = val;
-                if (_index == 0) {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => MyHomepage()));
-                }
-              }),
-              currentIndex: _index,
-              items: [
-                FloatingNavbarItem(
-                  icon: Icons.recent_actors_sharp,
-                  title: 'recent',
-                ),
-                FloatingNavbarItem(icon: Icons.save_rounded, title: 'saved'),
-                FloatingNavbarItem(icon: Icons.recent_actors, title: 'recent'),
-              ],
-            ),
+            child: Consumer<UI>(builder: (context, ui, child) {
+              return FloatingNavbar(
+                //  padding: EdgeInsets.zero,
+                iconSize: 20,
+                backgroundColor: Colors.deepPurple,
+                selectedItemColor: Colors.deepPurple,
+                unselectedItemColor: Colors.white,
+                onTap: (newValue) => setState(() {
+                  // _index = newValue;
+                  ui.index = newValue;
+
+                  if (ui.index == 0) {
+                    Navigator.pop(context,
+                        MaterialPageRoute(builder: (context) => MyHomepage()));
+                  }
+                }),
+                currentIndex: ui.index,
+                items: [
+                  FloatingNavbarItem(
+                    icon: Icons.recent_actors_sharp,
+                    title: 'recent',
+                  ),
+                  FloatingNavbarItem(icon: Icons.save_rounded, title: 'saved'),
+                  FloatingNavbarItem(
+                      icon: Icons.recent_actors, title: 'recent'),
+                ],
+              );
+            }),
           ),
         ],
       ),

@@ -9,9 +9,11 @@ import 'package:foodose/models/search.dart';
 import 'package:foodose/view/meal_planner.dart';
 import 'package:foodose/view/searchedRecipe.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'dart:io';
 import './models/joke.dart';
+import './models/ui_provider.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 //import 'package:your_splash/your_splash.dart';
 //import 'package:url_launcher/url_launcher.dart';
@@ -120,12 +122,17 @@ class Foodose extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primaryColor: Colors.amberAccent[700],
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UI()),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primaryColor: Colors.amberAccent[700],
+        ),
+        home: MyHomepage(),
       ),
-      home: MyHomepage(),
     );
   }
 }
@@ -136,7 +143,7 @@ class MyHomepage extends StatefulWidget {
 }
 
 class _MyHomepageState extends State<MyHomepage> {
-  int _index = 0;
+  // int _index = 0;
   Future<List<Recipe>> futureRecipe;
   Future<Joke> futureJoke;
   Future<SList> filter;
@@ -419,35 +426,39 @@ class _MyHomepageState extends State<MyHomepage> {
           )
         ],
       ),
-      bottomNavigationBar: Container(
-        padding: EdgeInsets.zero,
+      bottomNavigationBar: Consumer<UI>(builder: (context, ui, child) {
+        return Container(
+          padding: EdgeInsets.zero,
 
-        //  height: MediaQuery.of(context).size.height * 1 -
-        //     MediaQuery.of(context).size.height * 0.8945,
-        child: FloatingNavbar(
-          //  padding: EdgeInsets.zero,
-          iconSize: 20,
-          backgroundColor: Colors.deepPurple,
-          selectedItemColor: Colors.deepPurple,
-          unselectedItemColor: Colors.white,
-          onTap: (int val) => setState(() {
-            _index = val;
-            if (_index == 2) {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => MealPlanner()));
-            }
-          }),
-          currentIndex: _index,
-          items: [
-            FloatingNavbarItem(
-              icon: Icons.recent_actors_sharp,
-              title: 'recent',
-            ),
-            FloatingNavbarItem(icon: Icons.save_rounded, title: 'saved'),
-            FloatingNavbarItem(icon: Icons.recent_actors, title: 'recent'),
-          ],
-        ),
-      ),
+          //  height: MediaQuery.of(context).size.height * 1 -
+          //     MediaQuery.of(context).size.height * 0.8945,
+          child: FloatingNavbar(
+            //  padding: EdgeInsets.zero,
+            iconSize: 20,
+            backgroundColor: Colors.deepPurple,
+            selectedItemColor: Colors.deepPurple,
+            unselectedItemColor: Colors.white,
+            onTap: (newValue) => setState(() {
+              // _index = newValue;
+              ui.index = newValue;
+
+              if (ui.index == 2) {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => MealPlanner()));
+              }
+            }),
+            currentIndex: ui.index,
+            items: [
+              FloatingNavbarItem(
+                icon: Icons.recent_actors_sharp,
+                title: 'recent',
+              ),
+              FloatingNavbarItem(icon: Icons.save_rounded, title: 'saved'),
+              FloatingNavbarItem(icon: Icons.recent_actors, title: 'recent'),
+            ],
+          ),
+        );
+      }),
     );
   }
 

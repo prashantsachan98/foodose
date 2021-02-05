@@ -34,6 +34,8 @@ dependencies:
   http: ^0.12.2
   json_annotation: ^3.1.1
   easy_debounce: ^1.0.2
+  provider: ^4.3.3
+ # vertical_card_pager: ^1.4.0
  # your_splash: ^0.2.2
  # webview_flutter: ^1.0.7
 

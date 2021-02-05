@@ -1,22 +1,21 @@
 class MealPlan {
   final List<Meals> meals;
-  final List<Nutrients> nutrients;
+  final Nutrients nutrients;
 
   MealPlan({this.meals, this.nutrients});
 
   factory MealPlan.fromJson(Map<String, dynamic> parsedJson) {
     var list = parsedJson['meals'] as List;
     List<Meals> mealList = list.map((i) => Meals.fromJson(i)).toList();
-    var nutrientlist = parsedJson['meals'] as List;
-    List<Nutrients> nutlList =
-        nutrientlist.map((i) => Nutrients.fromJson(i)).toList();
 
-    return MealPlan(meals: mealList, nutrients: nutlList);
+    return MealPlan(
+        meals: mealList,
+        nutrients: Nutrients.fromJson(parsedJson['nutrients']));
   }
 }
 
 class Meals {
-  final String id;
+  final int id;
   final String title;
   final String sourceUrl;
 
@@ -31,10 +30,10 @@ class Meals {
 }
 
 class Nutrients {
-  final int calories;
-  final int carbohydrates;
-  final int fat;
-  final int protein;
+  final double calories;
+  final double carbohydrates;
+  final double fat;
+  final double protein;
 
   Nutrients({this.calories, this.carbohydrates, this.fat, this.protein});
   factory Nutrients.fromJson(Map<String, dynamic> parsedJson) {
