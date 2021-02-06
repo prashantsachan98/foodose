@@ -147,15 +147,15 @@ class _MyHomepageState extends State<MyHomepage> {
   Future<List<Recipe>> futureRecipe;
   Future<Joke> futureJoke;
   Future<SList> filter;
-  String _textString = '';
+  String _textString;
   bool _folded = true;
 
   @override
   void initState() {
+    filter = flist(_textString);
     super.initState();
     futureRecipe = fetchRandomRecipe();
     futureJoke = fetchJoke();
-    filter = flist(_textString);
   }
 
   void doSomething(String text) {
@@ -196,19 +196,30 @@ class _MyHomepageState extends State<MyHomepage> {
               // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 Container(
-                  height: 20,
+                  height: 15,
                   width: MediaQuery.of(context).size.width * 1,
                 ),
                 Container(
                   alignment: Alignment.centerLeft,
-                  padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
-                  child: Text(
-                    'Hello Prashant ',
-                    style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: 'poppins',
-                      //backgroundColor: Colors.teal,
+                  padding: EdgeInsets.fromLTRB(15, 15, 15, 15),
+                  child: FittedBox(
+                    child: Card(
+                      shadowColor: Colors.deepPurple,
+                      elevation: 10,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
+                        child: Text(
+                          'Hello prashant',
+                          style: TextStyle(
+                              fontSize: 30,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: 'poppins',
+                              color: Colors.deepPurple),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -240,22 +251,73 @@ class _MyHomepageState extends State<MyHomepage> {
                     if (snapshot.hasData) {
                       return Expanded(
                         child: SingleChildScrollView(
+                          // scrollDirection: Axis.horizontal,
                           //physics: NeverScrollableScrollPhysics(),
                           //shrinkWrap: true,
                           padding:
                               EdgeInsets.symmetric(horizontal: 5, vertical: 10),
                           child: Column(
                             children: <Widget>[
-                              getRecipeView(snapshot.data[0]),
-                              getRecipeView(snapshot.data[1]),
-                              getRecipeView(snapshot.data[2]),
-                              getRecipeView(snapshot.data[3]),
-                              getRecipeView(snapshot.data[4]),
-                              getRecipeView(snapshot.data[5]),
-                              getRecipeView(snapshot.data[6]),
-                              getRecipeView(snapshot.data[7]),
-                              getRecipeView(snapshot.data[8]),
-                              getRecipeView(snapshot.data[9]),
+                              Card(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30)),
+                                child: getRecipeView(snapshot.data[0]),
+                                elevation: 9,
+                              ),
+                              Card(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30)),
+                                child: getRecipeView(snapshot.data[1]),
+                                elevation: 9,
+                              ),
+                              Card(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30)),
+                                child: getRecipeView(snapshot.data[2]),
+                                elevation: 9,
+                              ),
+                              Card(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30)),
+                                child: getRecipeView(snapshot.data[3]),
+                                elevation: 9,
+                              ),
+                              Card(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30)),
+                                child: getRecipeView(snapshot.data[4]),
+                                elevation: 9,
+                              ),
+                              Card(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30)),
+                                child: getRecipeView(snapshot.data[5]),
+                                elevation: 9,
+                              ),
+                              Card(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30)),
+                                child: getRecipeView(snapshot.data[6]),
+                                elevation: 9,
+                              ),
+                              Card(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30)),
+                                child: getRecipeView(snapshot.data[7]),
+                                elevation: 9,
+                              ),
+                              Card(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30)),
+                                child: getRecipeView(snapshot.data[8]),
+                                elevation: 9,
+                              ),
+                              Card(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30)),
+                                child: getRecipeView(snapshot.data[9]),
+                                elevation: 9,
+                              ),
                             ],
                           ),
                         ),
@@ -355,7 +417,7 @@ class _MyHomepageState extends State<MyHomepage> {
                 ),
               ),
               AnimatedContainer(
-                duration: Duration(milliseconds: 400),
+                duration: Duration(milliseconds: 200),
                 height: _folded ? 0 : 550,
                 alignment: Alignment.centerRight,
                 // height: 550,
@@ -477,56 +539,49 @@ class _MyHomepageState extends State<MyHomepage> {
     }*/
 
     return Container(
-      child: Stack(
-        children: <Widget>[
-          InkWell(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          SearchedRecipe(recipe.id.toString())));
-            },
-            splashColor: Color.fromRGBO(139, 0, 0, 1),
-            child: Card(
-              semanticContainer: true,
-              clipBehavior: Clip.antiAliasWithSaveLayer,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-              elevation: 5,
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  image: DecorationImage(
-                    image: NetworkImage(recipe.imgURL),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                child: Container(
-                  height: MediaQuery.of(context).size.height * 0.2,
-                  padding: EdgeInsets.all(5),
-                  child: Align(
-                    alignment: Alignment.bottomLeft,
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
-                      child: Text(
-                        recipe.title,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+        child: Stack(children: <Widget>[
+      InkWell(
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => SearchedRecipe(recipe.id.toString())));
+        },
+        child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+          Container(
+            margin: EdgeInsets.fromLTRB(5, 5, 5, 0),
+            height: MediaQuery.of(context).size.height * 0.25,
+            width: MediaQuery.of(context).size.width * 1,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.elliptical(30, 30)),
+              color: Colors.white10,
+              boxShadow: kElevationToShadow[10],
+              //gradient:
+              //   LinearGradient(colors: [Colors.green, Colors.blue]),
+              //borderRadius: BorderRadius.circular(100),
+              image: DecorationImage(
+                fit: BoxFit.fill,
+                image: NetworkImage(
+                    'https://spoonacular.com//recipeImages/${recipe.id.toString()}-312x231.jpg'),
+                //fit: BoxFit.fitHeight,
               ),
             ),
           ),
-        ],
+          Card(
+            margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+            elevation: 0,
+            child: Text(
+              recipe.title,
+              style: TextStyle(
+                fontWeight: FontWeight.normal,
+                fontSize: 20,
+              ),
+            ),
+          ),
+        ]),
       ),
-    );
+    ]));
   }
 }
+
+//transition

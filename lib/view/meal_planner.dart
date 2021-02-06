@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:foodose/main.dart';
 import 'package:foodose/models/ui_provider.dart';
 import 'package:foodose/view/meal_plan_recipes.dart';
-
 import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.dart';
 import 'package:provider/provider.dart';
 
@@ -48,8 +47,7 @@ class _MealPlannerState extends State<MealPlanner> {
             alignment: Alignment.center,
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: NetworkImage(
-                    'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=353&q=80'),
+                image: AssetImage('assets/images/splash.jfif'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -201,8 +199,7 @@ class _MealPlannerState extends State<MealPlanner> {
                   ui.index = newValue;
 
                   if (ui.index == 0) {
-                    Navigator.pop(context,
-                        MaterialPageRoute(builder: (context) => MyHomepage()));
+                    Navigator.of(context).pop(_createRoute());
                   }
                 }),
                 currentIndex: ui.index,
@@ -222,4 +219,22 @@ class _MealPlannerState extends State<MealPlanner> {
       ),
     );
   }
+}
+
+Route _createRoute() {
+  return PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) => MyHomepage(),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      var begin = Offset(0.0, 1.0);
+      var end = Offset.zero;
+      var curve = Curves.ease;
+
+      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+      return SlideTransition(
+        position: animation.drive(tween),
+        child: child,
+      );
+    },
+  );
 }

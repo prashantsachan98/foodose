@@ -51,7 +51,7 @@ class MealRecipeList extends StatefulWidget {
 }
 
 class _MealRecipeListState extends State<MealRecipeList> {
-  List<String> _meals = ['Breakfast', 'Lunch', 'dinner'];
+  // List<String> _meals = ['Breakfast', 'Lunch', 'dinner'];
   final double calories;
   final String diet;
   Future<MealPlan> futureMealplan;
@@ -82,10 +82,11 @@ class _MealRecipeListState extends State<MealRecipeList> {
                       child: Column(
                         children: [
                           Card(
-                            elevation: 10,
+                            elevation: 1,
                             child: Text(
                               'Nutrients Value ',
-                              style: TextStyle(fontSize: 30),
+                              style: TextStyle(
+                                  fontSize: 30, fontWeight: FontWeight.bold),
                             ),
                           ),
                           Card(
@@ -135,177 +136,212 @@ class _MealRecipeListState extends State<MealRecipeList> {
                         ],
                       ),
                     ),
-                    Card(
-                      elevation: 10,
-                      child: Text('Breakfast', style: TextStyle(fontSize: 30)),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => SearchedRecipe(
-                                    snapshot.data.meals[0].id.toString())));
-                      },
-                      child: Stack(
-                        children: [
-                          Container(
-                            margin: EdgeInsets.all(10),
-                            height: MediaQuery.of(context).size.height * 0.35,
-                            width: MediaQuery.of(context).size.width * 1,
-                            padding: EdgeInsets.symmetric(horizontal: 10),
-                            decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.elliptical(30, 30)),
-                              color: Colors.white10,
-                              boxShadow: kElevationToShadow[10],
-                              //gradient:
-                              //   LinearGradient(colors: [Colors.green, Colors.blue]),
-                              //borderRadius: BorderRadius.circular(100),
-                              image: DecorationImage(
-                                fit: BoxFit.fill,
-                                image: NetworkImage(
-                                    'https://spoonacular.com//recipeImages/${snapshot.data.meals[0].id.toString()}-312x231.jpg'),
-                                //fit: BoxFit.fitHeight,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.all(10),
-                            height: MediaQuery.of(context).size.height * 0.35,
-                            width: MediaQuery.of(context).size.width * 1,
-                            padding: EdgeInsets.symmetric(horizontal: 10),
-                            //color: Colors.redAccent,
-                            alignment: Alignment.bottomCenter,
-                            child: Container(
-                              padding: EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                  color: Colors.white54,
-                                  borderRadius: BorderRadius.circular(20)),
-                              child: Text(
-                                snapshot.data.meals[0].title,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                    SizedBox(
+                      height: 5,
                     ),
                     Card(
                       elevation: 10,
-                      child: Text('Lunch', style: TextStyle(fontSize: 30)),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => SearchedRecipe(
-                                    snapshot.data.meals[1].id.toString())));
-                      },
-                      child: Stack(
+                      child: Column(
                         children: [
                           Container(
-                            margin: EdgeInsets.all(10),
-                            height: MediaQuery.of(context).size.height * 0.35,
-                            width: MediaQuery.of(context).size.width * 1,
-                            padding: EdgeInsets.symmetric(horizontal: 10),
-                            decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.elliptical(30, 30)),
-                              color: Colors.white10,
-                              boxShadow: kElevationToShadow[10],
-                              //gradient:
-                              //   LinearGradient(colors: [Colors.green, Colors.blue]),
-                              //borderRadius: BorderRadius.circular(100),
-                              image: DecorationImage(
-                                fit: BoxFit.fill,
-                                image: NetworkImage(
-                                    'https://spoonacular.com//recipeImages/${snapshot.data.meals[1].id.toString()}-312x231.jpg'),
-                                //fit: BoxFit.fitHeight,
-                              ),
-                            ),
+                            margin: EdgeInsets.fromLTRB(0, 5, 0, 0),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(border: Border.all()),
+                            width: MediaQuery.of(context).size.width * 0.5,
+                            child: Text('Breakfast',
+                                style: TextStyle(fontSize: 30)),
                           ),
-                          Container(
-                            margin: EdgeInsets.all(10),
-                            height: MediaQuery.of(context).size.height * 0.35,
-                            width: MediaQuery.of(context).size.width * 1,
-                            padding: EdgeInsets.symmetric(horizontal: 10),
-                            //color: Colors.redAccent,
-                            alignment: Alignment.bottomCenter,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.white54,
-                                  borderRadius: BorderRadius.circular(20)),
-                              child: Text(
-                                snapshot.data.meals[1].title,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => SearchedRecipe(
+                                          snapshot.data.meals[0].id
+                                              .toString())));
+                            },
+                            child: Stack(
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.fromLTRB(10, 5, 10, 10),
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.35,
+                                  width: MediaQuery.of(context).size.width * 1,
+                                  padding: EdgeInsets.symmetric(horizontal: 10),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.all(
+                                        Radius.elliptical(30, 30)),
+                                    color: Colors.white10,
+                                    boxShadow: kElevationToShadow[10],
+                                    //gradient:
+                                    //   LinearGradient(colors: [Colors.green, Colors.blue]),
+                                    //borderRadius: BorderRadius.circular(100),
+                                    image: DecorationImage(
+                                      fit: BoxFit.fill,
+                                      image: NetworkImage(
+                                          'https://spoonacular.com//recipeImages/${snapshot.data.meals[0].id.toString()}-312x231.jpg'),
+                                      //fit: BoxFit.fitHeight,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Card(
-                      elevation: 10,
-                      child: Text('Dinner', style: TextStyle(fontSize: 30)),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => SearchedRecipe(
-                                    snapshot.data.meals[2].id.toString())));
-                      },
-                      child: Stack(
-                        children: [
-                          Container(
-                            margin: EdgeInsets.all(10),
-                            height: MediaQuery.of(context).size.height * 0.35,
-                            width: MediaQuery.of(context).size.width * 1,
-                            padding: EdgeInsets.symmetric(horizontal: 10),
-                            decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.elliptical(30, 30)),
-                              color: Colors.white10,
-                              boxShadow: kElevationToShadow[10],
-                              //gradient:
-                              //   LinearGradient(colors: [Colors.green, Colors.blue]),
-                              //borderRadius: BorderRadius.circular(100),
-                              image: DecorationImage(
-                                fit: BoxFit.fill,
-                                image: NetworkImage(
-                                    'https://spoonacular.com//recipeImages/${snapshot.data.meals[2].id.toString()}-312x231.jpg'),
-                                //fit: BoxFit.fitHeight,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.all(10),
-                            height: MediaQuery.of(context).size.height * 0.35,
-                            width: MediaQuery.of(context).size.width * 1,
-                            padding: EdgeInsets.symmetric(horizontal: 10),
-                            //color: Colors.redAccent,
-                            alignment: Alignment.bottomCenter,
-                            child: Container(
-                              padding: EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                  color: Colors.white54,
-                                  borderRadius: BorderRadius.circular(20)),
-                              child: Text(
-                                snapshot.data.meals[2].title,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
+                                Container(
+                                  margin: EdgeInsets.all(10),
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.35,
+                                  width: MediaQuery.of(context).size.width * 1,
+                                  padding: EdgeInsets.symmetric(horizontal: 10),
+                                  //color: Colors.redAccent,
+                                  alignment: Alignment.bottomCenter,
+                                  child: Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                        color: Colors.white54,
+                                        borderRadius:
+                                            BorderRadius.circular(20)),
+                                    child: Text(
+                                      snapshot.data.meals[0].title,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20,
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(border: Border.all()),
+                            width: MediaQuery.of(context).size.width * 0.5,
+                            child:
+                                Text('Lunch', style: TextStyle(fontSize: 30)),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => SearchedRecipe(
+                                          snapshot.data.meals[1].id
+                                              .toString())));
+                            },
+                            child: Stack(
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.fromLTRB(10, 5, 10, 10),
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.35,
+                                  width: MediaQuery.of(context).size.width * 1,
+                                  padding: EdgeInsets.symmetric(horizontal: 10),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.all(
+                                        Radius.elliptical(30, 30)),
+                                    color: Colors.white10,
+                                    boxShadow: kElevationToShadow[10],
+                                    //gradient:
+                                    //   LinearGradient(colors: [Colors.green, Colors.blue]),
+                                    //borderRadius: BorderRadius.circular(100),
+                                    image: DecorationImage(
+                                      fit: BoxFit.fill,
+                                      image: NetworkImage(
+                                          'https://spoonacular.com//recipeImages/${snapshot.data.meals[1].id.toString()}-312x231.jpg'),
+                                      //fit: BoxFit.fitHeight,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.all(10),
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.35,
+                                  width: MediaQuery.of(context).size.width * 1,
+                                  padding: EdgeInsets.symmetric(horizontal: 10),
+                                  //color: Colors.redAccent,
+                                  alignment: Alignment.bottomCenter,
+                                  child: Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                        color: Colors.white54,
+                                        borderRadius:
+                                            BorderRadius.circular(20)),
+                                    child: Text(
+                                      snapshot.data.meals[1].title,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(border: Border.all()),
+                            width: MediaQuery.of(context).size.width * 0.5,
+                            child:
+                                Text('Dinner', style: TextStyle(fontSize: 30)),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => SearchedRecipe(
+                                          snapshot.data.meals[2].id
+                                              .toString())));
+                            },
+                            child: Stack(
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.fromLTRB(10, 5, 10, 10),
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.35,
+                                  width: MediaQuery.of(context).size.width * 1,
+                                  padding: EdgeInsets.symmetric(horizontal: 10),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.all(
+                                        Radius.elliptical(30, 30)),
+                                    color: Colors.white10,
+                                    boxShadow: kElevationToShadow[10],
+                                    //gradient:
+                                    //   LinearGradient(colors: [Colors.green, Colors.blue]),
+                                    //borderRadius: BorderRadius.circular(100),
+                                    image: DecorationImage(
+                                      fit: BoxFit.fill,
+                                      image: NetworkImage(
+                                          'https://spoonacular.com//recipeImages/${snapshot.data.meals[2].id.toString()}-312x231.jpg'),
+                                      //fit: BoxFit.fitHeight,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.all(10),
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.35,
+                                  width: MediaQuery.of(context).size.width * 1,
+                                  padding: EdgeInsets.symmetric(horizontal: 10),
+                                  //color: Colors.redAccent,
+                                  alignment: Alignment.bottomCenter,
+                                  child: Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                        color: Colors.white54,
+                                        borderRadius:
+                                            BorderRadius.circular(20)),
+                                    child: Text(
+                                      snapshot.data.meals[2].title,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -317,7 +353,19 @@ class _MealRecipeListState extends State<MealRecipeList> {
             ),
           );
         }
-        return CircularProgressIndicator();
+        return Container(
+          color: Colors.white,
+          child: Transform.scale(
+            scale: 1,
+            child: Container(
+              height: 300,
+              alignment: Alignment.center,
+              child: CircularProgressIndicator(
+                  //strokeWidth: 20,
+                  ),
+            ),
+          ),
+        );
       },
     );
   }
