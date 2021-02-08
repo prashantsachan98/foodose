@@ -205,12 +205,10 @@ class _MealPlannerState extends State<MealPlanner> {
                 currentIndex: ui.index,
                 items: [
                   FloatingNavbarItem(
-                    icon: Icons.recent_actors_sharp,
-                    title: 'recent',
+                    icon: Icons.home_outlined,
+                    title: 'Home',
                   ),
-                  FloatingNavbarItem(icon: Icons.save_rounded, title: 'saved'),
-                  FloatingNavbarItem(
-                      icon: Icons.recent_actors, title: 'recent'),
+                  FloatingNavbarItem(icon: Icons.food_bank, title: 'Meal'),
                 ],
               );
             }),

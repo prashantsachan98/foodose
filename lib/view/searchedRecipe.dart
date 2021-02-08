@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+//import 'package:foodose/models/saved_recipe.dart';
+
 //import '../models/recipe.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:io';
 import '../models/recipeid.dart';
+//import 'package:hive/hive.dart';
+//import 'package:hive_flutter/hive_flutter.dart';
+//import 'package:path_provider/path_provider.dart';
 //import 'package:url_launcher/url_launcher.dart';
 
 //searched recipe data
@@ -53,8 +58,11 @@ class SearchedRecipe extends StatefulWidget {
 class _SearchedRecipeState extends State<SearchedRecipe> {
   String id;
   _SearchedRecipeState(this.id);
+  String sTitle;
+  String sId;
 
   Future<RecipeId> futureSearchedRecipe;
+
   @override
   void initState() {
     super.initState();
@@ -79,6 +87,10 @@ class _SearchedRecipeState extends State<SearchedRecipe> {
                   padding: EdgeInsets.symmetric(horizontal: 5, vertical: 0),
                   child: Column(
                     children: <Widget>[
+                      SizedBox(
+                        height: 20,
+                      ),
+
                       //elevation: 7,
                       Container(
                         margin: EdgeInsets.fromLTRB(0, 0, 0, 10),

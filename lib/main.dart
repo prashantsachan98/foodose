@@ -5,6 +5,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.dart';
 import 'package:foodose/models/recipe.dart';
+import 'package:foodose/models/saved_recipe.dart';
 import 'package:foodose/models/search.dart';
 import 'package:foodose/view/meal_planner.dart';
 import 'package:foodose/view/searchedRecipe.dart';
@@ -15,6 +16,12 @@ import 'dart:io';
 import './models/joke.dart';
 import './models/ui_provider.dart';
 import 'package:easy_debounce/easy_debounce.dart';
+import 'dart:async';
+import 'package:flutter/widgets.dart';
+import 'package:hive/hive.dart';
+//import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
+
 //import 'package:your_splash/your_splash.dart';
 //import 'package:url_launcher/url_launcher.dart';
 //...
@@ -108,11 +115,17 @@ Future<Joke> fetchJoke() async {
   }
 }
 
-void main() {
+const String savedRecipeOffline = 'offLine';
+void main() async {
   SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
   /*SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
   ));*/
+  WidgetsFlutterBinding.ensureInitialized();
+  final document = await getApplicationDocumentsDirectory();
+  Hive.init(document.path);
+  Hive.registerAdapter(SavedRecipeAdapter());
+  await Hive.openBox<SavedRecipe>(savedRecipeOffline);
   runApp(Foodose());
 }
 
@@ -143,6 +156,7 @@ class MyHomepage extends StatefulWidget {
 }
 
 class _MyHomepageState extends State<MyHomepage> {
+  Box box;
   // int _index = 0;
   Future<List<Recipe>> futureRecipe;
   Future<Joke> futureJoke;
@@ -504,7 +518,7 @@ class _MyHomepageState extends State<MyHomepage> {
               // _index = newValue;
               ui.index = newValue;
 
-              if (ui.index == 2) {
+              if (ui.index == 1) {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => MealPlanner()));
               }
@@ -512,11 +526,10 @@ class _MyHomepageState extends State<MyHomepage> {
             currentIndex: ui.index,
             items: [
               FloatingNavbarItem(
-                icon: Icons.recent_actors_sharp,
-                title: 'recent',
+                icon: Icons.home_outlined,
+                title: 'Home',
               ),
-              FloatingNavbarItem(icon: Icons.save_rounded, title: 'saved'),
-              FloatingNavbarItem(icon: Icons.recent_actors, title: 'recent'),
+              FloatingNavbarItem(icon: Icons.food_bank, title: 'Meals'),
             ],
           ),
         );
