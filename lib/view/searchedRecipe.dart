@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:foodose/models/saved_recipe.dart';
+
 //import 'package:foodose/models/saved_recipe.dart';
 
 //import '../models/recipe.dart';
@@ -6,7 +8,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:io';
 import '../models/recipeid.dart';
-//import 'package:hive/hive.dart';
+import 'package:hive/hive.dart';
 //import 'package:hive_flutter/hive_flutter.dart';
 //import 'package:path_provider/path_provider.dart';
 //import 'package:url_launcher/url_launcher.dart';
@@ -59,7 +61,7 @@ class _SearchedRecipeState extends State<SearchedRecipe> {
   String id;
   _SearchedRecipeState(this.id);
   String sTitle;
-  String sId;
+  int sId;
 
   Future<RecipeId> futureSearchedRecipe;
 
@@ -69,143 +71,95 @@ class _SearchedRecipeState extends State<SearchedRecipe> {
     futureSearchedRecipe = fetchSearchedRecipe(id);
   }
 
+  void addRecipe(SavedRecipe data) {
+    var box = Hive.box<SavedRecipe>('offline');
+    box.add(data);
+    //box.deleteFromDisk();
+    print(box.getAt(1));
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: EdgeInsets.zero,
-      children: [
-        Container(
-          padding: EdgeInsets.zero,
-          height: MediaQuery.of(context).size.height * 1,
-          color: Colors.white,
-          alignment: Alignment.center,
-          child: FutureBuilder(
-            future: futureSearchedRecipe,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(horizontal: 5, vertical: 0),
-                  child: Column(
-                    children: <Widget>[
-                      SizedBox(
-                        height: 20,
-                      ),
-
-                      //elevation: 7,
-                      Container(
-                        margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                        height: MediaQuery.of(context).size.height * 0.35,
-                        width: MediaQuery.of(context).size.width * 1,
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.all(Radius.elliptical(30, 30)),
-                          color: Colors.white10,
-                          boxShadow: kElevationToShadow[12],
-                          //gradient:
-                          //   LinearGradient(colors: [Colors.green, Colors.blue]),
-                          //borderRadius: BorderRadius.circular(100),
-                          image: DecorationImage(
-                            fit: BoxFit.fill,
-                            image: NetworkImage(snapshot.data.image),
-                            //fit: BoxFit.fitHeight,
-                          ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('saved Recipe', style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.deepPurple,
+      ),
+      body: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          Container(
+            padding: EdgeInsets.zero,
+            height: MediaQuery.of(context).size.height * 1,
+            color: Colors.white,
+            alignment: Alignment.center,
+            child: FutureBuilder(
+              future: futureSearchedRecipe,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  sTitle = snapshot.data.title;
+                  sId = snapshot.data.id;
+                  return SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(horizontal: 5, vertical: 0),
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(
+                          height: 10,
                         ),
-                      ),
 
-                      Card(
-                        elevation: 0,
-                        child: Container(
-                          decoration: BoxDecoration(
-                              border:
-                                  Border.all(color: Colors.black, width: 2)),
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          alignment: Alignment.center,
-                          height: 40,
+                        //elevation: 7,
+                        Container(
+                          margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                          height: MediaQuery.of(context).size.height * 0.35,
                           width: MediaQuery.of(context).size.width * 1,
-                          child: FittedBox(
-                            child: Text(
-                              snapshot.data.title,
-                              style: TextStyle(
-                                fontSize: 25,
-                                fontWeight: FontWeight.normal,
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.all(Radius.elliptical(30, 30)),
+                            color: Colors.white10,
+                            boxShadow: kElevationToShadow[12],
+                            //gradient:
+                            //   LinearGradient(colors: [Colors.green, Colors.blue]),
+                            //borderRadius: BorderRadius.circular(100),
+                            image: DecorationImage(
+                              fit: BoxFit.fill,
+                              image: NetworkImage(snapshot.data.image),
+                              //fit: BoxFit.fitHeight,
+                            ),
+                          ),
+                        ),
+
+                        Card(
+                          elevation: 0,
+                          child: Container(
+                            decoration: BoxDecoration(
+                                border:
+                                    Border.all(color: Colors.black, width: 2)),
+                            padding: EdgeInsets.symmetric(horizontal: 20),
+                            alignment: Alignment.center,
+                            height: 40,
+                            width: MediaQuery.of(context).size.width * 1,
+                            child: FittedBox(
+                              child: Text(
+                                snapshot.data.title,
+                                style: TextStyle(
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.normal,
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
 
-                      Card(
-                        elevation: 10,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              height: 15,
-                            ),
-                            Card(
-                              elevation: 0,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    //  boxShadow: kElevationToShadow[6],
-                                    color: Colors.white),
-                                margin: EdgeInsets.all(5),
-                                // color: Colors.green,
-                                padding: EdgeInsets.symmetric(horizontal: 10),
-                                // width: MediaQuery.of(context).size.width * 1,
-                                child: Text(
-                                  'Ingredients',
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      backgroundColor: Colors.white,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
+                        Card(
+                          elevation: 10,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                height: 15,
                               ),
-                            ),
-                            Card(
-                              elevation: 0,
-                              child: Container(
-                                padding: EdgeInsets.all(10),
-                                child: Container(
-                                  child: ListView.separated(
-                                      padding: EdgeInsets.zero,
-                                      separatorBuilder:
-                                          (BuildContext context, int index) =>
-                                              Divider(
-                                                height: 10,
-                                              ),
-                                      itemCount:
-                                          snapshot.data.ingredients.length,
-                                      physics: NeverScrollableScrollPhysics(),
-                                      shrinkWrap: true,
-                                      itemBuilder: (context, index) {
-                                        int count = index + 1;
-                                        return Text(
-                                          '$count' +
-                                              '.  ' +
-                                              snapshot
-                                                  .data.ingredients[index].name,
-                                          style: TextStyle(fontSize: 17),
-                                        );
-                                      }),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      Card(
-                        elevation: 10,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              child: Card(
+                              Card(
                                 elevation: 0,
                                 child: Container(
                                   decoration: BoxDecoration(
@@ -217,7 +171,7 @@ class _SearchedRecipeState extends State<SearchedRecipe> {
                                   padding: EdgeInsets.symmetric(horizontal: 10),
                                   // width: MediaQuery.of(context).size.width * 1,
                                   child: Text(
-                                    'Instructions',
+                                    'Ingredients',
                                     style: TextStyle(
                                         color: Colors.black,
                                         backgroundColor: Colors.white,
@@ -226,48 +180,128 @@ class _SearchedRecipeState extends State<SearchedRecipe> {
                                   ),
                                 ),
                               ),
-                            ),
-                            Container(
-                              padding: EdgeInsets.all(10),
-                              child: Card(
+                              Card(
                                 elevation: 0,
-                                child: ListView.separated(
-                                    physics: NeverScrollableScrollPhysics(),
-                                    shrinkWrap: true,
-                                    padding: EdgeInsets.zero,
-                                    separatorBuilder:
-                                        (BuildContext context, int index) =>
-                                            Divider(
-                                              height: 10,
-                                            ),
-                                    itemCount: snapshot
-                                        .data.instructions[0].steps.length,
-                                    itemBuilder: (context, index) {
-                                      int count = index + 1;
-                                      return Text(
-                                        '$count' +
-                                            '.  ' +
-                                            snapshot.data.instructions[0]
-                                                .steps[index].step,
-                                        style: TextStyle(fontSize: 17),
-                                      );
-                                    }),
+                                child: Container(
+                                  padding: EdgeInsets.all(10),
+                                  child: Container(
+                                    child: ListView.separated(
+                                        padding: EdgeInsets.zero,
+                                        separatorBuilder:
+                                            (BuildContext context, int index) =>
+                                                Divider(
+                                                  height: 10,
+                                                ),
+                                        itemCount:
+                                            snapshot.data.ingredients.length,
+                                        physics: NeverScrollableScrollPhysics(),
+                                        shrinkWrap: true,
+                                        itemBuilder: (context, index) {
+                                          int count = index + 1;
+                                          return Text(
+                                            '$count' +
+                                                '.  ' +
+                                                snapshot.data.ingredients[index]
+                                                    .name,
+                                            style: TextStyle(fontSize: 17),
+                                          );
+                                        }),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                );
-              } else if (snapshot.hasError) {
-                return Text("${snapshot.error}");
-              }
-              return CircularProgressIndicator();
-            },
+                        SizedBox(
+                          height: 15,
+                        ),
+                        Card(
+                          elevation: 10,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                child: Card(
+                                  elevation: 0,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        //  boxShadow: kElevationToShadow[6],
+                                        color: Colors.white),
+                                    margin: EdgeInsets.all(5),
+                                    // color: Colors.green,
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 10),
+                                    // width: MediaQuery.of(context).size.width * 1,
+                                    child: Text(
+                                      'Instructions',
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          backgroundColor: Colors.white,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                padding: EdgeInsets.all(10),
+                                child: Card(
+                                  elevation: 0,
+                                  child: ListView.separated(
+                                      physics: NeverScrollableScrollPhysics(),
+                                      shrinkWrap: true,
+                                      padding: EdgeInsets.zero,
+                                      separatorBuilder:
+                                          (BuildContext context, int index) =>
+                                              Divider(
+                                                height: 10,
+                                              ),
+                                      itemCount: snapshot
+                                          .data.instructions[0].steps.length,
+                                      itemBuilder: (context, index) {
+                                        int count = index + 1;
+                                        return Text(
+                                          '$count' +
+                                              '.  ' +
+                                              snapshot.data.instructions[0]
+                                                  .steps[index].step,
+                                          style: TextStyle(fontSize: 17),
+                                        );
+                                      }),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                } else if (snapshot.hasError) {
+                  return Text("${snapshot.error}");
+                }
+                return CircularProgressIndicator();
+              },
+            ),
           ),
+        ],
+      ),
+      floatingActionButton: Builder(
+        builder: (context) => FloatingActionButton(
+          backgroundColor: Colors.deepPurple,
+          child: Icon(Icons.save),
+          onPressed: () {
+            print('l');
+            addRecipe(
+              SavedRecipe(title: sTitle, id: sId),
+            );
+            Scaffold.of(context).showSnackBar(SnackBar(
+              backgroundColor: Colors.deepOrangeAccent,
+              content: Text('saved'),
+            ));
+          },
         ),
-      ],
+      ),
     );
   }
 }

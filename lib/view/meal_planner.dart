@@ -3,7 +3,10 @@ import 'package:foodose/main.dart';
 import 'package:foodose/models/ui_provider.dart';
 import 'package:foodose/view/meal_plan_recipes.dart';
 import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+
+import 'offline.dart';
 
 //widget
 
@@ -199,7 +202,10 @@ class _MealPlannerState extends State<MealPlanner> {
                   ui.index = newValue;
 
                   if (ui.index == 0) {
-                    Navigator.of(context).pop(_createRoute());
+                    navigator.pop(_createRouteHome());
+                  }
+                  if (ui.index == 2) {
+                    Get.off(Offline());
                   }
                 }),
                 currentIndex: ui.index,
@@ -209,6 +215,7 @@ class _MealPlannerState extends State<MealPlanner> {
                     title: 'Home',
                   ),
                   FloatingNavbarItem(icon: Icons.food_bank, title: 'Meal'),
+                  FloatingNavbarItem(icon: Icons.save_rounded, title: 'saved'),
                 ],
               );
             }),
@@ -219,7 +226,7 @@ class _MealPlannerState extends State<MealPlanner> {
   }
 }
 
-Route _createRoute() {
+Route _createRouteHome() {
   return PageRouteBuilder(
     pageBuilder: (context, animation, secondaryAnimation) => MyHomepage(),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {

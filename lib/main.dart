@@ -10,6 +10,7 @@ import 'package:foodose/models/search.dart';
 import 'package:foodose/view/meal_planner.dart';
 import 'package:foodose/view/searchedRecipe.dart';
 import 'package:http/http.dart' as http;
+import './view/offline.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -21,9 +22,8 @@ import 'package:flutter/widgets.dart';
 import 'package:hive/hive.dart';
 //import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:get/get.dart';
 
-//import 'package:your_splash/your_splash.dart';
-//import 'package:url_launcher/url_launcher.dart';
 //...
 
 //  random recipe
@@ -115,7 +115,7 @@ Future<Joke> fetchJoke() async {
   }
 }
 
-const String savedRecipeOffline = 'offLine';
+final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
 void main() async {
   SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
   /*SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -125,7 +125,8 @@ void main() async {
   final document = await getApplicationDocumentsDirectory();
   Hive.init(document.path);
   Hive.registerAdapter(SavedRecipeAdapter());
-  await Hive.openBox<SavedRecipe>(savedRecipeOffline);
+  await Hive.openBox<SavedRecipe>('offline');
+
   runApp(Foodose());
 }
 
@@ -139,12 +140,13 @@ class Foodose extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => UI()),
       ],
-      child: MaterialApp(
+      child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primaryColor: Colors.amberAccent[700],
         ),
         home: MyHomepage(),
+        navigatorKey: navigatorKey,
       ),
     );
   }
@@ -522,6 +524,14 @@ class _MyHomepageState extends State<MyHomepage> {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => MealPlanner()));
               }
+
+              if (ui.index == 2) {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => Offline()));
+              }
+              if (ui.index == 0) {
+                Get.off(MyHomepage());
+              }
             }),
             currentIndex: ui.index,
             items: [
@@ -530,6 +540,7 @@ class _MyHomepageState extends State<MyHomepage> {
                 title: 'Home',
               ),
               FloatingNavbarItem(icon: Icons.food_bank, title: 'Meals'),
+              FloatingNavbarItem(icon: Icons.save_rounded, title: 'saved'),
             ],
           ),
         );
