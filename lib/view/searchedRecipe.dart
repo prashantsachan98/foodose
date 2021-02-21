@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:foodose/models/saved_recipe.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:get/get.dart';
 
 //import 'package:foodose/models/saved_recipe.dart';
 
@@ -73,6 +75,7 @@ class _SearchedRecipeState extends State<SearchedRecipe> {
 
   void addRecipe(SavedRecipe data) {
     var box = Hive.box<SavedRecipe>('offline');
+
     box.add(data);
     //box.deleteFromDisk();
     print(box.getAt(1));
@@ -82,24 +85,25 @@ class _SearchedRecipeState extends State<SearchedRecipe> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('saved Recipe', style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.deepPurple,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Get.back(),
+        ),
+        title: Text('Recipe', style: TextStyle(color: Colors.white)),
+        backgroundColor: Color.fromRGBO(251, 156, 92, 1),
       ),
       body: ListView(
         padding: EdgeInsets.zero,
         children: [
-          Container(
-            padding: EdgeInsets.zero,
-            height: MediaQuery.of(context).size.height * 1,
-            color: Colors.white,
-            alignment: Alignment.center,
-            child: FutureBuilder(
-              future: futureSearchedRecipe,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  sTitle = snapshot.data.title;
-                  sId = snapshot.data.id;
-                  return SingleChildScrollView(
+          FutureBuilder(
+            future: futureSearchedRecipe,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                sTitle = snapshot.data.title;
+                sId = snapshot.data.id;
+                return Container(
+                  color: Color.fromRGBO(255, 218, 185, 1),
+                  child: SingleChildScrollView(
                     padding: EdgeInsets.symmetric(horizontal: 5, vertical: 0),
                     child: Column(
                       children: <Widget>[
@@ -133,20 +137,17 @@ class _SearchedRecipeState extends State<SearchedRecipe> {
                           elevation: 0,
                           child: Container(
                             decoration: BoxDecoration(
-                                border:
-                                    Border.all(color: Colors.black, width: 2)),
+                                border: Border.all(
+                                    color: Color.fromRGBO(251, 156, 92, 1),
+                                    width: 2)),
                             padding: EdgeInsets.symmetric(horizontal: 20),
                             alignment: Alignment.center,
                             height: 40,
                             width: MediaQuery.of(context).size.width * 1,
                             child: FittedBox(
-                              child: Text(
-                                snapshot.data.title,
-                                style: TextStyle(
-                                  fontSize: 25,
-                                  fontWeight: FontWeight.normal,
-                                ),
-                              ),
+                              child: Text(snapshot.data.title,
+                                  style: GoogleFonts.pacifico(
+                                      fontSize: 20, letterSpacing: 0.6)),
                             ),
                           ),
                         ),
@@ -170,14 +171,9 @@ class _SearchedRecipeState extends State<SearchedRecipe> {
                                   // color: Colors.green,
                                   padding: EdgeInsets.symmetric(horizontal: 10),
                                   // width: MediaQuery.of(context).size.width * 1,
-                                  child: Text(
-                                    'Ingredients',
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        backgroundColor: Colors.white,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold),
-                                  ),
+                                  child: Text('Ingredients',
+                                      style:
+                                          GoogleFonts.pacifico(fontSize: 20)),
                                 ),
                               ),
                               Card(
@@ -203,7 +199,9 @@ class _SearchedRecipeState extends State<SearchedRecipe> {
                                                 '.  ' +
                                                 snapshot.data.ingredients[index]
                                                     .name,
-                                            style: TextStyle(fontSize: 17),
+                                            style: GoogleFonts.sansita(
+                                              fontSize: 17,
+                                            ),
                                           );
                                         }),
                                   ),
@@ -235,11 +233,7 @@ class _SearchedRecipeState extends State<SearchedRecipe> {
                                     // width: MediaQuery.of(context).size.width * 1,
                                     child: Text(
                                       'Instructions',
-                                      style: TextStyle(
-                                          color: Colors.black,
-                                          backgroundColor: Colors.white,
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold),
+                                      style: GoogleFonts.pacifico(fontSize: 20),
                                     ),
                                   ),
                                 ),
@@ -251,7 +245,7 @@ class _SearchedRecipeState extends State<SearchedRecipe> {
                                   child: ListView.separated(
                                       physics: NeverScrollableScrollPhysics(),
                                       shrinkWrap: true,
-                                      padding: EdgeInsets.zero,
+                                      //padding: EdgeInsets.zero,
                                       separatorBuilder:
                                           (BuildContext context, int index) =>
                                               Divider(
@@ -266,7 +260,8 @@ class _SearchedRecipeState extends State<SearchedRecipe> {
                                               '.  ' +
                                               snapshot.data.instructions[0]
                                                   .steps[index].step,
-                                          style: TextStyle(fontSize: 17),
+                                          style: GoogleFonts.sansita(
+                                              fontSize: 17, wordSpacing: 4),
                                         );
                                       }),
                                 ),
@@ -276,19 +271,20 @@ class _SearchedRecipeState extends State<SearchedRecipe> {
                         ),
                       ],
                     ),
-                  );
-                } else if (snapshot.hasError) {
-                  return Text("${snapshot.error}");
-                }
-                return CircularProgressIndicator();
-              },
-            ),
+                  ),
+                );
+              } else if (snapshot.hasError) {
+                return Text("${snapshot.error}");
+              }
+              return Transform.scale(
+                  scale: 0.01, child: CircularProgressIndicator());
+            },
           ),
         ],
       ),
       floatingActionButton: Builder(
         builder: (context) => FloatingActionButton(
-          backgroundColor: Colors.deepPurple,
+          backgroundColor: Color.fromRGBO(251, 156, 92, 1),
           child: Icon(Icons.save),
           onPressed: () {
             print('l');

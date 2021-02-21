@@ -30,7 +30,7 @@ class _MealPlannerState extends State<MealPlanner> {
     'Whole30',
   ];
   //Future<MealPlan> futureMealPlan;
-  double _sliderVal = 1;
+  double _sliderVal = 350;
   String _diet = 'None';
   // int _index = 0;
 
@@ -141,7 +141,7 @@ class _MealPlannerState extends State<MealPlanner> {
                         trackHeight: 6,
                       ),
                       child: Slider(
-                        min: 0,
+                        min: 350,
                         max: 4500,
                         //  autofocus: true,
                         label: 'calories',
@@ -193,9 +193,10 @@ class _MealPlannerState extends State<MealPlanner> {
             child: Consumer<UI>(builder: (context, ui, child) {
               return FloatingNavbar(
                 //  padding: EdgeInsets.zero,
+                margin: EdgeInsets.symmetric(horizontal: 5, vertical: 4),
                 iconSize: 20,
-                backgroundColor: Colors.deepPurple,
-                selectedItemColor: Colors.deepPurple,
+                backgroundColor: Color.fromRGBO(251, 156, 92, 1),
+                selectedItemColor: Color.fromRGBO(251, 156, 92, 1),
                 unselectedItemColor: Colors.white,
                 onTap: (newValue) => setState(() {
                   // _index = newValue;
