@@ -8,6 +8,8 @@ import 'package:provider/provider.dart';
 //
 import 'offline.dart';
 
+import 'offline.dart';
+
 //widget
 
 class MealPlanner extends StatefulWidget {
