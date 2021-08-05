@@ -3,7 +3,10 @@ import 'package:foodose/main.dart';
 import 'package:foodose/models/ui_provider.dart';
 import 'package:foodose/view/meal_plan_recipes.dart';
 import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+//
+import 'offline.dart';
 
 //widget
 
@@ -27,7 +30,7 @@ class _MealPlannerState extends State<MealPlanner> {
     'Whole30',
   ];
   //Future<MealPlan> futureMealPlan;
-  double _sliderVal = 1;
+  double _sliderVal = 350;
   String _diet = 'None';
   // int _index = 0;
 
@@ -138,7 +141,7 @@ class _MealPlannerState extends State<MealPlanner> {
                         trackHeight: 6,
                       ),
                       child: Slider(
-                        min: 0,
+                        min: 350,
                         max: 4500,
                         //  autofocus: true,
                         label: 'calories',
@@ -190,16 +193,20 @@ class _MealPlannerState extends State<MealPlanner> {
             child: Consumer<UI>(builder: (context, ui, child) {
               return FloatingNavbar(
                 //  padding: EdgeInsets.zero,
+                margin: EdgeInsets.symmetric(horizontal: 5, vertical: 4),
                 iconSize: 20,
-                backgroundColor: Colors.deepPurple,
-                selectedItemColor: Colors.deepPurple,
+                backgroundColor: Color.fromRGBO(251, 156, 92, 1),
+                selectedItemColor: Color.fromRGBO(251, 156, 92, 1),
                 unselectedItemColor: Colors.white,
                 onTap: (newValue) => setState(() {
                   // _index = newValue;
                   ui.index = newValue;
 
                   if (ui.index == 0) {
-                    Navigator.of(context).pop(_createRoute());
+                    navigator.pop(_createRouteHome());
+                  }
+                  if (ui.index == 2) {
+                    Get.off(Offline());
                   }
                 }),
                 currentIndex: ui.index,
@@ -209,6 +216,7 @@ class _MealPlannerState extends State<MealPlanner> {
                     title: 'Home',
                   ),
                   FloatingNavbarItem(icon: Icons.food_bank, title: 'Meal'),
+                  FloatingNavbarItem(icon: Icons.save_rounded, title: 'saved'),
                 ],
               );
             }),
@@ -219,7 +227,7 @@ class _MealPlannerState extends State<MealPlanner> {
   }
 }
 
-Route _createRoute() {
+Route _createRouteHome() {
   return PageRouteBuilder(
     pageBuilder: (context, animation, secondaryAnimation) => MyHomepage(),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {

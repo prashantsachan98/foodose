@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -10,6 +11,7 @@ import 'package:foodose/models/search.dart';
 import 'package:foodose/view/meal_planner.dart';
 import 'package:foodose/view/searchedRecipe.dart';
 import 'package:http/http.dart' as http;
+import './view/offline.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -21,9 +23,8 @@ import 'package:flutter/widgets.dart';
 import 'package:hive/hive.dart';
 //import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:get/get.dart';
 
-//import 'package:your_splash/your_splash.dart';
-//import 'package:url_launcher/url_launcher.dart';
 //...
 
 //  random recipe
@@ -115,7 +116,7 @@ Future<Joke> fetchJoke() async {
   }
 }
 
-const String savedRecipeOffline = 'offLine';
+final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
 void main() async {
   SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
   /*SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -125,7 +126,8 @@ void main() async {
   final document = await getApplicationDocumentsDirectory();
   Hive.init(document.path);
   Hive.registerAdapter(SavedRecipeAdapter());
-  await Hive.openBox<SavedRecipe>(savedRecipeOffline);
+  await Hive.openBox<SavedRecipe>('offline');
+
   runApp(Foodose());
 }
 
@@ -139,12 +141,13 @@ class Foodose extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => UI()),
       ],
-      child: MaterialApp(
+      child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primaryColor: Colors.amberAccent[700],
         ),
         home: MyHomepage(),
+        navigatorKey: navigatorKey,
       ),
     );
   }
@@ -203,6 +206,7 @@ class _MyHomepageState extends State<MyHomepage> {
         alignment: Alignment.centerRight,
         children: [
           Container(
+            color: Color.fromRGBO(255, 218, 185, 1),
             height: MediaQuery.of(context).size.height * 1,
             width: MediaQuery.of(context).size.width * 1,
             child: Column(
@@ -218,7 +222,7 @@ class _MyHomepageState extends State<MyHomepage> {
                   padding: EdgeInsets.fromLTRB(15, 15, 15, 15),
                   child: FittedBox(
                     child: Card(
-                      shadowColor: Colors.deepPurple,
+                      shadowColor: Color.fromRGBO(249, 111, 17, 1),
                       elevation: 10,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20)),
@@ -227,11 +231,10 @@ class _MyHomepageState extends State<MyHomepage> {
                             horizontal: 10, vertical: 5),
                         child: Text(
                           'Hello prashant',
-                          style: TextStyle(
-                              fontSize: 30,
-                              fontWeight: FontWeight.w500,
-                              fontFamily: 'poppins',
-                              color: Colors.deepPurple),
+                          style: GoogleFonts.pacifico(
+                              letterSpacing: 1,
+                              fontSize: 21,
+                              color: Colors.deepOrange),
                         ),
                       ),
                     ),
@@ -244,13 +247,12 @@ class _MyHomepageState extends State<MyHomepage> {
                       print(snapshot.data.joke);
                       return Container(
                         alignment: Alignment.centerLeft,
-                        padding: EdgeInsets.symmetric(horizontal: 5),
+                        padding: EdgeInsets.symmetric(horizontal: 10),
                         child: Text(
                           snapshot.data.joke,
-                          style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                              fontStyle: FontStyle.italic),
+                          style: GoogleFonts.satisfy(
+                            fontSize: 20,
+                          ),
                         ),
                       );
                     } else if (snapshot.hasError) {
@@ -380,7 +382,7 @@ class _MyHomepageState extends State<MyHomepage> {
                             ? TextField(
                                 inputFormatters: [
                                   FilteringTextInputFormatter.allow(
-                                    RegExp('[a-zA-Z]'),
+                                    RegExp('[a-zA-Z ]'),
                                   ),
                                 ],
                                 onChanged: (text) {
@@ -395,7 +397,7 @@ class _MyHomepageState extends State<MyHomepage> {
                                 decoration: InputDecoration(
                                     hintText: 'Search',
                                     hintStyle:
-                                        TextStyle(color: Colors.blue[300]),
+                                        TextStyle(color: Colors.orangeAccent),
                                     border: InputBorder.none),
                               )
                             : null,
@@ -415,7 +417,7 @@ class _MyHomepageState extends State<MyHomepage> {
                             padding: const EdgeInsets.all(16.0),
                             child: Icon(
                               _folded ? Icons.search : Icons.close,
-                              color: Colors.blue[900],
+                              color: Color.fromRGBO(249, 111, 17, 1),
                             ),
                           ),
                           onTap: () {
@@ -431,17 +433,18 @@ class _MyHomepageState extends State<MyHomepage> {
                 ),
               ),
               AnimatedContainer(
+                //color: Color.fromRGBO(255, 218, 185, 1),
                 duration: Duration(milliseconds: 200),
-                height: _folded ? 0 : 550,
+                height:
+                    _folded ? 0 : MediaQuery.of(context).size.height * 0.7785,
                 alignment: Alignment.centerRight,
-                // height: 550,
                 child: FutureBuilder<SList>(
                     future: flist(_textString),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         return Container(
                           // padding: EdgeInsets.zero,
-                          color: Colors.white70,
+                          color: Color.fromRGBO(255, 218, 185, 1),
                           // color: Color.fromRGBO(1, 1, 1, 0.2),
                           child: ListView.separated(
                             //   padding: EdgeInsets.zero,
@@ -449,7 +452,7 @@ class _MyHomepageState extends State<MyHomepage> {
                                 (BuildContext context, int index) => Divider(
                               height: 0,
                             ),
-                            itemCount: 9,
+                            itemCount: 10,
                             itemBuilder: (context, index) {
                               return Container(
                                 decoration: BoxDecoration(
@@ -457,11 +460,13 @@ class _MyHomepageState extends State<MyHomepage> {
                                     ),
                                 //color: Colors.white.withOpacity(0.9),
                                 padding: EdgeInsets.symmetric(horizontal: 15),
-                                height: 58,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.07,
                                 child: Material(
                                   child: InkWell(
                                     splashColor: Colors.redAccent,
                                     onTap: () {
+                                      _textString = null;
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -504,15 +509,13 @@ class _MyHomepageState extends State<MyHomepage> {
       ),
       bottomNavigationBar: Consumer<UI>(builder: (context, ui, child) {
         return Container(
+          color: Color.fromRGBO(255, 218, 185, 1),
           padding: EdgeInsets.zero,
-
-          //  height: MediaQuery.of(context).size.height * 1 -
-          //     MediaQuery.of(context).size.height * 0.8945,
           child: FloatingNavbar(
-            //  padding: EdgeInsets.zero,
+            margin: EdgeInsets.symmetric(horizontal: 5, vertical: 4),
             iconSize: 20,
-            backgroundColor: Colors.deepPurple,
-            selectedItemColor: Colors.deepPurple,
+            backgroundColor: Color.fromRGBO(251, 156, 92, 1),
+            selectedItemColor: Color.fromRGBO(251, 156, 92, 1),
             unselectedItemColor: Colors.white,
             onTap: (newValue) => setState(() {
               // _index = newValue;
@@ -522,6 +525,14 @@ class _MyHomepageState extends State<MyHomepage> {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => MealPlanner()));
               }
+
+              if (ui.index == 2) {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => Offline()));
+              }
+              if (ui.index == 0) {
+                Get.off(MyHomepage());
+              }
             }),
             currentIndex: ui.index,
             items: [
@@ -530,6 +541,7 @@ class _MyHomepageState extends State<MyHomepage> {
                 title: 'Home',
               ),
               FloatingNavbarItem(icon: Icons.food_bank, title: 'Meals'),
+              FloatingNavbarItem(icon: Icons.save_rounded, title: 'saved'),
             ],
           ),
         );
@@ -567,7 +579,7 @@ class _MyHomepageState extends State<MyHomepage> {
             width: MediaQuery.of(context).size.width * 1,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.elliptical(30, 30)),
-              color: Colors.white10,
+
               boxShadow: kElevationToShadow[10],
               //gradient:
               //   LinearGradient(colors: [Colors.green, Colors.blue]),
@@ -585,10 +597,8 @@ class _MyHomepageState extends State<MyHomepage> {
             elevation: 0,
             child: Text(
               recipe.title,
-              style: TextStyle(
-                fontWeight: FontWeight.normal,
-                fontSize: 20,
-              ),
+              style: GoogleFonts.pacifico(letterSpacing: 0.6),
+              textAlign: TextAlign.center,
             ),
           ),
         ]),
